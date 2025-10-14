@@ -1,0 +1,54 @@
+# Personal Grade Calculator (PGC) - Backend Test Guide
+
+⚠️ Disclaimer:
+The current back-end code for PGC is a work in progress.
+This version represents approximately 30–35% of the final project completion.
+
+Prerequisites
+Make sure you have Python 3.10+ installed on your system.
+---
+1. Setup Virtual Environment
+```
+cd Back-end
+python -m venv venv
+```
+Activate it:
+- Windows: `venv\Scripts\activate`
+---
+2. Install Dependencies
+```
+pip install django djangorestframework
+```
+---
+3. Run Server
+```
+python manage.py runserver
+```
+You should see:
+```
+Starting development server at http://127.0.0.1:8000/
+```
+---
+4. Test Grade Calculation API
+Open your browser or Postman and visit:
+
+```
+http://127.0.0.1:8000/api/calculate/?scores=80,90,75&credits=3,3,2
+Note: Just put whatever in scores=??,??,?? and credits=?,?,?
+```
+Expected Response:
+```json
+{
+  "GPA": 82.08,
+  "Grade": "A"
+}
+```
+
+---
+
+5. (Optional) Stop the Server
+Press `CTRL + C` in your terminal.
+
+---
+
+Now. You have successfully tested the Django backend for PGC!
