@@ -1,5 +1,9 @@
 from django.http import JsonResponse
 from math import ceil
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import CalculateSerializer
+from .models import GradeResult
 
 
 def calculate_grade(request):
@@ -36,3 +40,36 @@ def calculate_grade(request):
         grade = "F"
 
     return JsonResponse({"GPA": round(gpa, 2), "Grade": grade})
+
+
+def score_to_grade(score):
+    if score >= 80:
+        return "A"
+    elif score >= 75:
+        return "B+"
+    elif score >= 70:
+        return "B"
+    elif score >= 65:
+        return "C+"
+    elif score >= 60:
+        return "C"
+    elif score >= 55:
+        return "D+"
+    elif score >= 50:
+        return "D"
+    else:
+        return "F"
+
+
+@api_view(["POST"])
+def calculate_grade_post(request):
+    serializer = CalculateSerializer(data=request.data)
+    if serializer.is_valid():
+        subjects = serializer.validated_data["subjects"]
+        total = sum(s["score"] * s["credit"] for s in subjects)
+        credits = sum(s["credit"] for s in subjects)
+        gpa = total / credits if credits else 0
+        grade = score_to_grade(gpa)
+        GradeResult.objects.create(total_gpa=gpa, grade_letter=grade)
+        return Response({"GPA": round(gpa, 2), "Grade": grade})
+    return Response(serializer.errors, status=400)
