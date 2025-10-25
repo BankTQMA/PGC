@@ -1,0 +1,138 @@
+/* Reset and global styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(120deg, #f0f3ff 0%, #e6e9ff 100%);
+    color: #333;
+    min-height: 100vh;
+}
+
+/* Main page container */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin: 30px 0;
+}
+
+header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+header p {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* General card styling */
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+}
+
+/* Semester Card */
+.semester-card h2 {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.subject-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.subject-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subject-info strong {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.subject-info span {
+    font-size: 0.9rem;
+    color: #666;
+    margin-left: 8px;
+}
+
+.subject-score input {
+    width: 100px;
+    padding: 10px;
+    border: none;
+    background: #f4f4f7;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+/* Result and Button Area */
+.result-area {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.btn-primary {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    background: #1a1a2e; /* Dark blue/black button */
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: #333;
+}
+
+#final-gpa {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-top: 20px;
+    color: #007bff;
+}
+
+/* Help Icon */
+.help-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: #111;
+    color: white;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 1.25rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
