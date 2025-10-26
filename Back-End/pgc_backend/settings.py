@@ -59,7 +59,7 @@ ROOT_URLCONF = "pgc_backend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, 'templates')],
+        "DIRS": [os.path.join(BASE_DIR.parent, "Front-End")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -133,5 +133,5 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static")
+    os.path.join(BASE_DIR.parent, "Front-End", "static")
 ]
