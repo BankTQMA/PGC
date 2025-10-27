@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import CalculateSerializer
 from .models import GradeResult
+from django.shortcuts import render
 
 
 def calculate_grade(request):
@@ -73,3 +74,47 @@ def calculate_grade_post(request):
         GradeResult.objects.create(total_gpa=gpa, grade_letter=grade)
         return Response({"GPA": round(gpa, 2), "Grade": grade})
     return Response(serializer.errors, status=400)
+
+
+def input_page(request):
+    if request.method == "POST":
+        scores = request.POST.get("scores")
+        credits = request.POST.get("credits")
+        try:
+            scores = list(map(float, scores.split(",")))
+            credits = list(map(float, credits.split(",")))
+            total = sum(s * c for s, c in zip(scores, credits))
+            gpa = total / sum(credits)
+            grade = (
+                "A"
+                if gpa >= 80
+                else (
+                    "B+"
+                    if gpa >= 75
+                    else (
+                        "B"
+                        if gpa >= 70
+                        else (
+                            "C+"
+                            if gpa >= 65
+                            else (
+                                "C"
+                                if gpa >= 60
+                                else "D+" if gpa >= 55 else "D" if gpa >= 50 else "F"
+                            )
+                        )
+                    )
+                )
+            )
+            GradeResult.objects.create(total_score_weighted=gpa, grade_letter=grade)
+            return render(
+                request, "gradecalc/input.html", {"gpa": round(gpa, 2), "grade": grade}
+            )
+        except Exception as e:
+            return render(request, "gradecalc/input.html", {"error": str(e)})
+    return render(request, "gradecalc/input.html")
+
+
+def history_page(request):
+    results = GradeResult.objects.all().order_by("-created_at")
+    return render(request, "gradecalc/history.html", {"results": results})
