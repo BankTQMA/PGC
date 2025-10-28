@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PGC</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>PGC calculator</h1>
+        </header>
+
+        <main class="main-content">
+            
+            {% csrf_token %}
+
+            <section class="card semester-card">
+                <h2>Semester 1</h2>
+                <div class="subject-list">
+                    
+                    <div class="subject-row" data-name="Calculus I" data-credit="3.0">
+                        <div class="subject-info">
+                            <strong>MFIT</strong>
+                            <span>(3.0 Credits)</span>
+                        </div>
+                        <div class="subject-score">
+                            <input type="number" class="score-input" min="0" max="100" placeholder="Score">
+                        </div>
+                    </div>
+
+                    <div class="subject-row" data-name="Intro to Programming" data-credit="3.0">
+                        <div class="subject-info">
+                            <strong>ICS</strong>
+                            <span>(3.0 Credits)</span>
+                        </div>
+                        <div class="subject-score">
+                            <input type="number" class="score-input" min="0" max="100" placeholder="Score">
+                        </div>
+                    </div>
+
+                    <div class="subject-row" data-name="Intro to Programming" data-credit="3.0">
+                        <div class="subject-info">
+                            <strong>PSCP</strong>
+                            <span>(3.0 Credits)</span>
+                        </div>
+                        <div class="subject-score">
+                            <input type="number" class="score-input" min="0" max="100" placeholder="Score">
+                        </div>
+                    </div>
+
+                    <div class="subject-row" data-name="Intro to Programming" data-credit="3.0">
+                        <div class="subject-info">
+                            <strong>ITF</strong>
+                            <span>(3.0 Credits)</span>
+                        </div>
+                        <div class="subject-score">
+                            <input type="number" class="score-input" min="0" max="100" placeholder="Score">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="result-area">
+                <button id="calculate-gpa-btn" class="btn-primary">Calculate Total GPA</button>
+                <div id="final-gpa"></div>
+            </div>
+
+        </main>
+    </div>
+
+    <div class="help-icon">?</div>
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
