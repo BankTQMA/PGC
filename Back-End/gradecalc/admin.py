@@ -6,5 +6,5 @@ from .models import GradeResult
 
 @admin.register(GradeResult)
 class GradeResultAdmin(admin.ModelAdmin):
-    list_display = ("id", "total_score_weighted", "grade_letter", "created_at")
+    list_display = ("id", "total_gpa", "grade_letter", "created_at")
     ordering = ("-created_at",)

@@ -5,17 +5,12 @@ from django.contrib.auth.models import User
 from .models import GradeResult, SubjectRecord
 from .serializers import CalculateSerializer, WhatIfSerializer, GradeResultSerializer
 from django.shortcuts import render
-from django.http import HttpResponse
 import os
 from django.conf import settings
 
 
 def index_view(request):
-    index_path = os.path.join(settings.BASE_DIR.parent, "Front-End", "index.html")
-    if os.path.exists(index_path):
-        with open(index_path, "r", encoding="utf-8") as f:
-            return HttpResponse(f.read())
-    return HttpResponse("<h1>Index file not found.</h1>", status=404)
+    return render(request, "index.html")
 
 
 def score_to_grade(score):
@@ -77,7 +72,7 @@ def calculate_grade_post(request):
         # บันทึกลงฐานข้อมูล
         result = GradeResult.objects.create(
             owner=request.user if request.user.is_authenticated else None,
-            total_score_weighted=avg,
+            total_gpa=avg,
             gpa4=gpa4,
             grade_letter=letter,
         )

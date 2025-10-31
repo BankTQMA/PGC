@@ -34,4 +34,4 @@ class WhatIfSerializer(serializers.Serializer):
 class GradeResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = GradeResult
-        fields = ["id", "created_at", "total_score_weighted", "gpa4", "grade_letter"]
+        fields = ["id", "total_gpa", "gpa4", "grade_letter", "created_at"]
