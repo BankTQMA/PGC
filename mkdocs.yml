@@ -1,0 +1,5 @@
+site_name: "Personal Grade Calculator | PGC"
+nav:
+  - Home: index.md
+  - Usage: usage.md
+  - MkDocs: mkdocs.md

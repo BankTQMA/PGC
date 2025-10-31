@@ -2,9 +2,20 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
 from .models import GradeResult, SubjectRecord
 from .serializers import CalculateSerializer, WhatIfSerializer, GradeResultSerializer
+from django.shortcuts import render
+from django.http import HttpResponse
+import os
+from django.conf import settings
+
+
+def index_view(request):
+    index_path = os.path.join(settings.BASE_DIR.parent, "Front-End", "index.html")
+    if os.path.exists(index_path):
+        with open(index_path, "r", encoding="utf-8") as f:
+            return HttpResponse(f.read())
+    return HttpResponse("<h1>Index file not found.</h1>", status=404)
 
 
 def score_to_grade(score):
@@ -41,31 +52,61 @@ def letter_to_gpa4(letter):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def calculate_grade_post(request):
-    ser = CalculateSerializer(data=request.data)
-    ser.is_valid(raise_exception=True)
-    subjects = ser.validated_data["subjects"]
-    total = sum(s["score"] * s["credit"] for s in subjects)
-    credits = sum(s["credit"] for s in subjects)
-    avg = total / credits if credits else 0
-    letter = score_to_grade(avg)
-    gpa4 = letter_to_gpa4(letter)
-    result = GradeResult.objects.create(
-        owner=request.user if request.user.is_authenticated else None,
-        total_score_weighted=avg,
-        gpa4=gpa4,
-        grade_letter=letter,
-    )
-    SubjectRecord.objects.bulk_create(
-        [
-            SubjectRecord(
-                result=result, name=s["name"], score=s["score"], credit=s["credit"]
+    serializer = CalculateSerializer(data=request.data)
+    if serializer.is_valid():
+        subjects = serializer.validated_data["subjects"]
+        total_weighted = 0
+        total_credits = 0
+
+        for subject in subjects:
+            components = subject["components"]
+
+            # รวมคะแนน
+            weighted_score = sum(
+                comp["score"] * (comp["weight"] / 100) for comp in components
             )
-            for s in subjects
-        ]
-    )
-    return Response(
-        {"GPA_percent": round(avg, 2), "Grade": letter, "GPA_4": gpa4, "id": result.id}
-    )
+
+            total_weighted += weighted_score * subject["credit"]
+            total_credits += subject["credit"]
+
+        # คำนวณ GPA
+        avg = total_weighted / total_credits if total_credits else 0
+        letter = score_to_grade(avg)
+        gpa4 = letter_to_gpa4(letter)
+
+        # บันทึกลงฐานข้อมูล
+        result = GradeResult.objects.create(
+            owner=request.user if request.user.is_authenticated else None,
+            total_score_weighted=avg,
+            gpa4=gpa4,
+            grade_letter=letter,
+        )
+
+        # สร้าง SubjectRecord สำหรับแต่ละวิชา
+        SubjectRecord.objects.bulk_create(
+            [
+                SubjectRecord(
+                    result=result,
+                    name=subject["name"],
+                    score=sum(
+                        comp["score"] * (comp["weight"] / 100)
+                        for comp in subject["components"]
+                    ),
+                    credit=subject["credit"],
+                )
+                for subject in subjects
+            ]
+        )
+
+        return Response(
+            {
+                "GPA_percent": round(avg, 2),
+                "Grade": letter,
+                "GPA_4": gpa4,
+                "id": result.id,
+            }
+        )
+    return Response(serializer.errors, status=400)
 
 
 @api_view(["GET"])

@@ -17,8 +17,12 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from gradecalc import views as gradecalc_views
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
+    path("", gradecalc_views.index_view, name="index"),
     path("admin/", admin.site.urls),
     path("api/", include("gradecalc.urls")),
+    path("api/login/", obtain_auth_token, name="api_login"),
 ]
