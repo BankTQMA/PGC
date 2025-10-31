@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>PGC - Grade Calculator</title>
+    {% load static %}
+    <style>
+        body {
+            font-family: Arial;
+            background: #f8f8f8;
+            margin: 40px;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            margin: auto;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        input {
+            width: 90%;
+            padding: 8px;
+            margin: 5px 0;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 style="text-align:center;">Personal Grade Calculator</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label>Scores (comma separated):</label><br>
+        <input type="text" name="scores" placeholder="e.g. 80,90,75" required><br>
+        <label>Credits (comma separated):</label><br>
+        <input type="text" name="credits" placeholder="e.g. 3,3,2" required><br>
+        <button type="submit">Calculate</button>
+    </form>
+
+    {% if gpa %}
+    <div class="result">
+        GPA: {{ gpa }} <br>
+        Grade: {{ grade }}
+    </div>
+    {% elif error %}
+    <div class="result" style="color:red;">Error: {{ error }}</div>
+    {% endif %}
+
+    <div class="result">
+        <a href="{% url 'history_page' %}">View Calculation History</a>
+    </div>
+</body>
+
+</html>

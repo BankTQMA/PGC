@@ -1,147 +1,157 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from math import ceil
-from rest_framework.authentication import BasicAuthentication, TokenAuthentication
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from .serializers import CalculateSerializer, GradeResultSerializer
-from .models import GradeResult
+from django.contrib.auth.models import User
+from .models import GradeResult, SubjectRecord
+from .serializers import CalculateSerializer, WhatIfSerializer, GradeResultSerializer
+from django.shortcuts import render
+import os
+from django.conf import settings
 
 
-def calculate_grade(request):
-    """Calculate the GPA based on entered scores"""
-    scores = request.GET.get("scores")
-    credits = request.GET.get("credits")
-
-    if not scores or not credits:
-        return JsonResponse({"error": "Missing data"}, status=400)
-
-    scores = list(map(float, scores.split(",")))
-    credits = list(map(float, credits.split(",")))
-
-    total_score = sum(s * c for s, c in zip(scores, credits))
-    total_credit = sum(credits)
-    gpa = total_score / total_credit
-
-    # แปลงเป็นเกรดตัวอักษรแบบง่าย ๆ
-    if gpa >= 80:
-        grade = "A"
-    elif gpa >= 75:
-        grade = "B+"
-    elif gpa >= 70:
-        grade = "B"
-    elif gpa >= 65:
-        grade = "C+"
-    elif gpa >= 60:
-        grade = "C"
-    elif gpa >= 55:
-        grade = "D+"
-    elif gpa >= 50:
-        grade = "D"
-    else:
-        grade = "F"
-
-    return JsonResponse({"GPA": round(gpa, 2), "Grade": grade})
+def index_view(request):
+    return render(request, "index.html")
 
 
 def score_to_grade(score):
     if score >= 80:
         return "A"
-    elif score >= 75:
+    if score >= 75:
         return "B+"
-    elif score >= 70:
+    if score >= 70:
         return "B"
-    elif score >= 65:
+    if score >= 65:
         return "C+"
-    elif score >= 60:
+    if score >= 60:
         return "C"
-    elif score >= 55:
+    if score >= 55:
         return "D+"
-    elif score >= 50:
+    if score >= 50:
         return "D"
-    else:
-        return "F"
+    return "F"
+
+
+def letter_to_gpa4(letter):
+    return {
+        "A": 4.0,
+        "B+": 3.5,
+        "B": 3.0,
+        "C+": 2.5,
+        "C": 2.0,
+        "D+": 1.5,
+        "D": 1.0,
+        "F": 0.0,
+    }[letter]
 
 
 @api_view(["POST"])
-@authentication_classes([BasicAuthentication, TokenAuthentication   ])
-@permission_classes([IsAuthenticated])  # <--- This is from our previous step
+@permission_classes([AllowAny])
 def calculate_grade_post(request):
     serializer = CalculateSerializer(data=request.data)
     if serializer.is_valid():
         subjects = serializer.validated_data["subjects"]
-        
-        calculated_subjects = [] # A new list to hold final scores
+        total_weighted = 0
+        total_credits = 0
 
-        # --- 1. First, calculate the final score for each subject ---
         for subject in subjects:
-            components = subject['components']
-            
-            # Calculate the weighted score for this one subject
-            subject_score = sum(
-                (c['score'] * (c['weight'] / 100.0)) for c in components
-            )
-            
-            # Store the calculated info
-            calculated_subjects.append({
-                "score": subject_score,
-                "credit": subject['credit'],
-                "is_major": subject.get('is_major', False)
-            })
+            components = subject["components"]
 
-        # --- 2. Overall GPA (using calculated scores) ---
-        total = sum(s["score"] * s["credit"] for s in calculated_subjects)
-        credits = sum(s["credit"] for s in calculated_subjects)
-        gpa = total / credits if credits else 0
-        grade = score_to_grade(gpa)
-        
-        # --- 3. Major-only GPA (using calculated scores) ---
-        major_subjects = [s for s in calculated_subjects if s['is_major']]
-        
-        major_total = sum(s["score"] * s["credit"] for s in major_subjects)
-        major_credits = sum(s["credit"] for s in major_subjects)
-        
-        major_gpa = major_total / major_credits if major_credits > 0 else 0
-        
-        # --- 4. Save to database (no change here) ---
-        GradeResult.objects.create(
-            user=request.user, 
-            total_gpa=gpa, 
-            major_gpa=major_gpa, 
-            grade_letter=grade
-        ) 
-        
-        # --- 5. Return new response (no change here) ---
-        return Response({
-            "GPA": round(gpa, 2), 
-            "Major_GPA": round(major_gpa, 2), 
-            "Grade": grade
-        })
-        
+            # รวมคะแนน
+            weighted_score = sum(
+                comp["score"] * (comp["weight"] / 100) for comp in components
+            )
+
+            total_weighted += weighted_score * subject["credit"]
+            total_credits += subject["credit"]
+
+        # คำนวณ GPA
+        avg = total_weighted / total_credits if total_credits else 0
+        letter = score_to_grade(avg)
+        gpa4 = letter_to_gpa4(letter)
+
+        # บันทึกลงฐานข้อมูล
+        result = GradeResult.objects.create(
+            owner=request.user if request.user.is_authenticated else None,
+            total_gpa=avg,
+            gpa4=gpa4,
+            grade_letter=letter,
+        )
+
+        # สร้าง SubjectRecord สำหรับแต่ละวิชา
+        SubjectRecord.objects.bulk_create(
+            [
+                SubjectRecord(
+                    result=result,
+                    name=subject["name"],
+                    score=sum(
+                        comp["score"] * (comp["weight"] / 100)
+                        for comp in subject["components"]
+                    ),
+                    credit=subject["credit"],
+                )
+                for subject in subjects
+            ]
+        )
+
+        return Response(
+            {
+                "GPA_percent": round(avg, 2),
+                "Grade": letter,
+                "GPA_4": gpa4,
+                "id": result.id,
+            }
+        )
     return Response(serializer.errors, status=400)
 
-# ... (your other views) ...
 
-@api_view(['GET'])
-@authentication_classes([BasicAuthentication, TokenAuthentication])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def list_results(request):
-    """
-    Handles GET requests to list all grade results
-    for the currently authenticated user.
-    """
-    # 1. Filter results to *only* get ones for the logged-in user
-    results = GradeResult.objects.filter(user=request.user).order_by('-created_at')
-    
-    # 2. Serialize the data (many=True since it's a list)
-    serializer = GradeResultSerializer(results, many=True)
-    
-    # 3. Return the JSON response
-    return Response(serializer.data)
+def my_history(request):
+    results = GradeResult.objects.filter(owner=request.user).order_by("-created_at")
+    return Response(GradeResultSerializer(results, many=True).data)
 
-def index_view(request):
-    """
-    serve the main HTML page
-    """
-    return render(request, "index.html")
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def what_if(request):
+    ser = WhatIfSerializer(data=request.data)
+    ser.is_valid(raise_exception=True)
+    target = ser.validated_data["target_gpa4"]
+    map_ = [
+        (4.0, 80),
+        (3.5, 75),
+        (3.0, 70),
+        (2.5, 65),
+        (2.0, 60),
+        (1.5, 55),
+        (1.0, 50),
+        (0.0, 0),
+    ]
+    for gpa, pct in map_:
+        if target >= gpa:
+            return Response({"target_gpa4": target, "required_avg_percent": pct})
+    return Response({"target_gpa4": target, "required_avg_percent": 0})
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def register_user(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+    if not username or not password:
+        return Response({"error": "missing credentials"}, status=400)
+    if User.objects.filter(username=username).exists():
+        return Response({"error": "user exists"}, status=400)
+    user = User.objects.create_user(username=username, password=password)
+    return Response({"message": "user created"})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def gpa_summary(request):
+    qs = GradeResult.objects.filter(owner=request.user)
+    if not qs.exists():
+        return Response({"average_percent": 0, "average_gpa4": 0})
+    avg_percent = round(sum(r.total_score_weighted for r in qs) / len(qs), 2)
+    avg_gpa4 = round(sum(r.gpa4 for r in qs) / len(qs), 2)
+    return Response({"average_percent": avg_percent, "average_gpa4": avg_gpa4})
