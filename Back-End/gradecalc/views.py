@@ -155,3 +155,26 @@ def gpa_summary(request):
     avg_percent = round(sum(r.total_score_weighted for r in qs) / len(qs), 2)
     avg_gpa4 = round(sum(r.gpa4 for r in qs) / len(qs), 2)
     return Response({"average_percent": avg_percent, "average_gpa4": avg_gpa4})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def gpa_tracking(request):
+    """
+    Return a list of GPA records for the logged-in user,
+    used for displaying progress tracking graphs.
+    """
+    results = GradeResult.objects.filter(owner=request.user).order_by("created_at")
+
+    data = [
+        {
+            "id": r.id,
+            "date": r.created_at.strftime("%Y-%m-%d"),
+            "total_gpa": round(r.total_gpa, 2),
+            "gpa4": round(r.gpa4, 2),
+            "grade_letter": r.grade_letter,
+        }
+        for r in results
+    ]
+
+    return Response(data)
