@@ -15,9 +15,9 @@ class SubjectSerializer(serializers.Serializer):
 
     def validate_components(self, components):
         total_weight = sum(c["weight"] for c in components)
-        if total_weight != 100:
+        if abs(total_weight - 100) > 0.001:
             raise serializers.ValidationError(
-                f"Component weights must add up to 100, not {total_weight}."
+                f"คะแนนส่วนประกอบต้องรวมเป็น 100% ตอนนี้ได้ {total_weight:.2f}%"
             )
         return components
 
@@ -31,6 +31,18 @@ class WhatIfSerializer(serializers.Serializer):
 
 
 class GradeResultSerializer(serializers.ModelSerializer):
+    subjects = serializers.SerializerMethodField()
+
+    def get_subjects(self, obj):
+        return [
+            {
+                "name": s.name,
+                "score": round(s.score, 2),
+                "credit": s.credit,
+            }
+            for s in obj.subjects.all()
+        ]
+
     class Meta:
         model = GradeResult
-        fields = ["id", "total_gpa", "gpa4", "grade_letter", "created_at"]
+        fields = ["id", "total_gpa", "gpa4", "grade_letter", "created_at", "subjects"]
