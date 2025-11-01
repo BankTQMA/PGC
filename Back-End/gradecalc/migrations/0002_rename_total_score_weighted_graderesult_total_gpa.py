@@ -6,13 +6,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('gradecalc', '0001_initial'),
+        ("gradecalc", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='graderesult',
-            old_name='total_score_weighted',
-            new_name='total_gpa',
+            model_name="graderesult",
+            old_name="total_score_weighted",
+            new_name="total_gpa",
         ),
     ]
