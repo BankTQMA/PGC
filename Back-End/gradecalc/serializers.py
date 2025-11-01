@@ -11,7 +11,6 @@ class ComponentSerializer(serializers.Serializer):
 class SubjectSerializer(serializers.Serializer):
     name = serializers.CharField()
     credit = serializers.FloatField(min_value=0.5, max_value=6)
-    is_major = serializers.BooleanField(required=False, default=False)
     components = ComponentSerializer(many=True)
 
     def validate_components(self, components):
