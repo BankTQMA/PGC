@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const yearSelect = document.getElementById("year-select");
     const currentYear = new Date().getFullYear();
     const startYear = 2020;
-    for (let year = currentYear + 1; year >= startYear; year--) {
+    for (let year = currentYear + 8; year >= startYear; year--) {
         const option = document.createElement("option");
         option.value = year;
         option.text = year;

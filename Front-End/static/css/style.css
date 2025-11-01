@@ -16,6 +16,7 @@ body {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+    position: relative;
 }
 
 header {
@@ -115,7 +116,7 @@ header p {
 }
 
 .help-icon {
-    position: fixed;
+    position: relative;
     bottom: 20px;
     right: 20px;
     width: 40px;
@@ -129,4 +130,22 @@ header p {
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.back-link {
+    position: absolute;
+    top: 30px;
+    left: 20px;
+    font-size: 4rem; 
+    font-weight: bold;
+    line-height: 1;
+    color: #242424;
+    z-index: 10;
+    text-decoration: none;
+    transition: color 1s ease-in-out;
+}
+
+.back-link:hover {
+    color: rgb(175, 175, 175);
+    text-decoration: none;
 }
