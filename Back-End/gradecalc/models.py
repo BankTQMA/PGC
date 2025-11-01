@@ -15,7 +15,7 @@ class GradeResult(models.Model):
     year = models.IntegerField(default=2025)
 
     def __str__(self):
-        return f"GPA {self.total_gpa:.2f} ({self.grade_letter})"
+        return f"GPA {self.total_gpa:.2f} ({self.grade_letter}) - {self.owner.username if self.owner else 'Guest'}"
 
 
 class SubjectRecord(models.Model):
