@@ -11,6 +11,9 @@ class GradeResult(models.Model):
     gpa4 = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    semester = models.CharField(max_length=10, default="1")
+    year = models.IntegerField(default=2025)
+
     def __str__(self):
         return f"GPA {self.total_gpa:.2f} ({self.grade_letter})"
 

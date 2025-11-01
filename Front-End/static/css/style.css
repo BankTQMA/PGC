@@ -12,14 +12,12 @@ body {
     min-height: 100vh;
 }
 
-/* Main page container */
 .container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* Header */
 header {
     text-align: center;
     margin: 30px 0;
@@ -40,7 +38,6 @@ header p {
     color: #555;
 }
 
-/* General card styling */
 .card {
     background: #ffffff;
     border-radius: 12px;
@@ -49,7 +46,6 @@ header p {
     margin-bottom: 25px;
 }
 
-/* Semester Card */
 .semester-card h2 {
     font-size: 1.25rem;
     margin-bottom: 20px;
@@ -90,7 +86,6 @@ header p {
     text-align: center;
 }
 
-/* Result and Button Area */
 .result-area {
     text-align: center;
     margin-top: 30px;
@@ -100,7 +95,7 @@ header p {
     padding: 14px 28px;
     border: none;
     border-radius: 8px;
-    background: #1a1a2e; /* Dark blue/black button */
+    background: #1a1a2e;
     color: white;
     font-size: 1.1rem;
     font-weight: 600;
@@ -119,7 +114,6 @@ header p {
     color: #007bff;
 }
 
-/* Help Icon */
 .help-icon {
     position: fixed;
     bottom: 20px;
