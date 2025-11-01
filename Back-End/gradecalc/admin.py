@@ -8,3 +8,6 @@ from .models import GradeResult
 class GradeResultAdmin(admin.ModelAdmin):
     list_display = ("id", "total_gpa", "grade_letter", "created_at")
     ordering = ("-created_at",)
+    admin.site.site_header = "PGC Login"
+    admin.site.site_title = "Login | PGC"
+

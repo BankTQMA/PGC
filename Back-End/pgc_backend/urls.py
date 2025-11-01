@@ -22,6 +22,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path("", gradecalc_views.index_view, name="index"),
+    path("record/", gradecalc_views.record_view, name="record_page"),
     path("admin/", admin.site.urls),
     path("api/", include("gradecalc.urls")),
     path("api/login/", obtain_auth_token, name="api_login"),

@@ -7,11 +7,14 @@ from .serializers import CalculateSerializer, WhatIfSerializer, GradeResultSeria
 from django.shortcuts import render
 import os
 from django.conf import settings
+from django.shortcuts import render
 
 
 def index_view(request):
     return render(request, "index.html")
 
+def record_view(request):
+    return render(request, "record.html")
 
 def score_to_grade(score):
     if score >= 80:
@@ -50,18 +53,14 @@ def calculate_grade_post(request):
     serializer = CalculateSerializer(data=request.data)
     if serializer.is_valid():
         subjects = serializer.validated_data["subjects"]
+        semester_data = serializer.validated_data["semester"]
+        year_data = serializer.validated_data["year"]
+
         total_weighted = 0
         total_credits = 0
 
         for subject in subjects:
-            components = subject["components"]
-
-            # รวมคะแนน
-            weighted_score = sum(
-                comp["score"] * (comp["weight"] / 100) for comp in components
-            )
-
-            total_weighted += weighted_score * subject["credit"]
+            total_weighted += subject["score"] * subject["credit"]
             total_credits += subject["credit"]
 
         # คำนวณ GPA
@@ -75,6 +74,8 @@ def calculate_grade_post(request):
             total_gpa=avg,
             gpa4=gpa4,
             grade_letter=letter,
+            semester=semester_data,
+            year=year_data
         )
 
         # สร้าง SubjectRecord สำหรับแต่ละวิชา
@@ -83,10 +84,7 @@ def calculate_grade_post(request):
                 SubjectRecord(
                     result=result,
                     name=subject["name"],
-                    score=sum(
-                        comp["score"] * (comp["weight"] / 100)
-                        for comp in subject["components"]
-                    ),
+                    score=subject["score"],
                     credit=subject["credit"],
                 )
                 for subject in subjects
