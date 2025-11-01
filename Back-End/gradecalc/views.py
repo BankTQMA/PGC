@@ -5,8 +5,6 @@ from django.contrib.auth.models import User
 from .models import GradeResult, SubjectRecord
 from .serializers import CalculateSerializer, WhatIfSerializer, GradeResultSerializer
 from django.shortcuts import render
-import os
-from django.conf import settings
 
 
 def index_view(request):
@@ -48,60 +46,53 @@ def letter_to_gpa4(letter):
 @permission_classes([AllowAny])
 def calculate_grade_post(request):
     serializer = CalculateSerializer(data=request.data)
-    if serializer.is_valid():
-        subjects = serializer.validated_data["subjects"]
-        total_weighted = 0
-        total_credits = 0
+    serializer.is_valid(raise_exception=True)
 
-        for subject in subjects:
-            components = subject["components"]
+    subjects = serializer.validated_data["subjects"]
+    total_weighted = 0
+    total_credits = 0
 
-            # รวมคะแนน
-            weighted_score = sum(
-                comp["score"] * (comp["weight"] / 100) for comp in components
+    for subject in subjects:
+        score = sum(
+            comp["score"] * (comp["weight"] / 100) for comp in subject["components"]
+        )
+        total_weighted += score * subject["credit"]
+        total_credits += subject["credit"]
+
+    avg = total_weighted / total_credits if total_credits else 0
+    letter = score_to_grade(avg)
+    gpa4 = letter_to_gpa4(letter)
+
+    result = GradeResult.objects.create(
+        owner=request.user if request.user.is_authenticated else None,
+        total_gpa=avg,
+        gpa4=gpa4,
+        grade_letter=letter,
+    )
+
+    SubjectRecord.objects.bulk_create(
+        [
+            SubjectRecord(
+                result=result,
+                name=subject["name"],
+                score=sum(
+                    comp["score"] * (comp["weight"] / 100)
+                    for comp in subject["components"]
+                ),
+                credit=subject["credit"],
             )
+            for subject in subjects
+        ]
+    )
 
-            total_weighted += weighted_score * subject["credit"]
-            total_credits += subject["credit"]
-
-        # คำนวณ GPA
-        avg = total_weighted / total_credits if total_credits else 0
-        letter = score_to_grade(avg)
-        gpa4 = letter_to_gpa4(letter)
-
-        # บันทึกลงฐานข้อมูล
-        result = GradeResult.objects.create(
-            owner=request.user if request.user.is_authenticated else None,
-            total_gpa=avg,
-            gpa4=gpa4,
-            grade_letter=letter,
-        )
-
-        # สร้าง SubjectRecord สำหรับแต่ละวิชา
-        SubjectRecord.objects.bulk_create(
-            [
-                SubjectRecord(
-                    result=result,
-                    name=subject["name"],
-                    score=sum(
-                        comp["score"] * (comp["weight"] / 100)
-                        for comp in subject["components"]
-                    ),
-                    credit=subject["credit"],
-                )
-                for subject in subjects
-            ]
-        )
-
-        return Response(
-            {
-                "GPA_percent": round(avg, 2),
-                "Grade": letter,
-                "GPA_4": gpa4,
-                "id": result.id,
-            }
-        )
-    return Response(serializer.errors, status=400)
+    return Response(
+        {
+            "GPA_percent": round(avg, 2),
+            "Grade": letter,
+            "GPA_4": gpa4,
+            "id": result.id,
+        }
+    )
 
 
 @api_view(["GET"])
@@ -116,8 +107,9 @@ def my_history(request):
 def what_if(request):
     ser = WhatIfSerializer(data=request.data)
     ser.is_valid(raise_exception=True)
+
     target = ser.validated_data["target_gpa4"]
-    map_ = [
+    scale = [
         (4.0, 80),
         (3.5, 75),
         (3.0, 70),
@@ -127,7 +119,7 @@ def what_if(request):
         (1.0, 50),
         (0.0, 0),
     ]
-    for gpa, pct in map_:
+    for gpa, pct in scale:
         if target >= gpa:
             return Response({"target_gpa4": target, "required_avg_percent": pct})
     return Response({"target_gpa4": target, "required_avg_percent": 0})
@@ -142,7 +134,7 @@ def register_user(request):
         return Response({"error": "missing credentials"}, status=400)
     if User.objects.filter(username=username).exists():
         return Response({"error": "user exists"}, status=400)
-    user = User.objects.create_user(username=username, password=password)
+    User.objects.create_user(username=username, password=password)
     return Response({"message": "user created"})
 
 
@@ -152,29 +144,26 @@ def gpa_summary(request):
     qs = GradeResult.objects.filter(owner=request.user)
     if not qs.exists():
         return Response({"average_percent": 0, "average_gpa4": 0})
-    avg_percent = round(sum(r.total_score_weighted for r in qs) / len(qs), 2)
+
+    avg_percent = round(sum(r.total_gpa for r in qs) / len(qs), 2)
     avg_gpa4 = round(sum(r.gpa4 for r in qs) / len(qs), 2)
+
     return Response({"average_percent": avg_percent, "average_gpa4": avg_gpa4})
 
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def gpa_tracking(request):
-    """
-    Return a list of GPA records for the logged-in user,
-    used for displaying progress tracking graphs.
-    """
     results = GradeResult.objects.filter(owner=request.user).order_by("created_at")
-
-    data = [
-        {
-            "id": r.id,
-            "date": r.created_at.strftime("%Y-%m-%d"),
-            "total_gpa": round(r.total_gpa, 2),
-            "gpa4": round(r.gpa4, 2),
-            "grade_letter": r.grade_letter,
-        }
-        for r in results
-    ]
-
-    return Response(data)
+    return Response(
+        [
+            {
+                "id": r.id,
+                "date": r.created_at.strftime("%Y-%m-%d"),
+                "total_gpa": round(r.total_gpa, 2),
+                "gpa4": round(r.gpa4, 2),
+                "grade_letter": r.grade_letter,
+            }
+            for r in results
+        ]
+    )
