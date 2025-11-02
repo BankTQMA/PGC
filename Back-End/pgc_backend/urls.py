@@ -26,4 +26,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("gradecalc.urls")),
     path("api/login/", obtain_auth_token, name="api_login"),
+    path("__reload__/", include("django_browser_reload.urls")),
 ]
