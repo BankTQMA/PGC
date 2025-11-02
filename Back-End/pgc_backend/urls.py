@@ -17,12 +17,12 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from gradecalc import views as gradecalc_views
+from gradecalc import views
 
 urlpatterns = [
-    path("", gradecalc_views.index_view, name="index"),
-    path("record/", gradecalc_views.record_view, name="record_page"),
-    path("history/", gradecalc_views.history_view, name="history_page"),
+    path("", views.index_view, name="index"),
+    path("record/", views.record_view, name="record_page"),
+    path("history/", views.history_view, name="history_page"),
     path("admin/", admin.site.urls),
     path("api/", include("gradecalc.urls")),
 ]

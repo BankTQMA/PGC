@@ -108,9 +108,9 @@ def calculate_grade_post(request):
 
 
 @api_view(["GET"])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def my_history(request):
-    results = GradeResult.objects.filter(owner=request.user).order_by("-created_at")
+    results = GradeResult.objects.all().order_by("-created_at")
     return Response(GradeResultSerializer(results, many=True).data)
 
 

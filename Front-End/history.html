@@ -3,8 +3,8 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PGC - My History</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
@@ -20,7 +20,7 @@
         }
 
         .container {
-            width: 85%;
+            width: 90%;
             max-width: 1000px;
             margin-top: 60px;
             background: #fff;
@@ -30,18 +30,6 @@
             animation: fadeIn 0.5s ease;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         header {
             background: linear-gradient(90deg, #3b82f6, #1e3a8a);
             color: white;
@@ -49,12 +37,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        header h1 {
-            font-size: 1.5rem;
-            margin: 0;
-            font-weight: 600;
         }
 
         header a {
@@ -71,41 +53,104 @@
             opacity: 0.8;
         }
 
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .table-wrapper {
+            max-height: 480px;
+            overflow-y: auto;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            text-align: center;
         }
 
         th,
         td {
             padding: 12px 10px;
-            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         th {
             background: #f0f4ff;
             color: #1e3a8a;
             font-weight: 600;
-            border-bottom: 2px solid #dbeafe;
+            position: sticky;
+            top: 0;
+            z-index: 2;
         }
 
         tr:nth-child(even) {
             background-color: #f9fbff;
         }
 
-        tr:hover {
+        tr:hover:not(.details-row) {
             background: #e8f0ff;
         }
 
-        td {
-            color: #333;
+        /* 🎨 dropdown rows */
+        .details-row td {
+            background: #f8faff;
+            padding: 0;
         }
 
-        .empty {
-            text-align: center;
-            padding: 20px;
-            color: #666;
+        .details-box {
+            text-align: left;
+            padding: 15px 25px;
+            font-size: 0.9rem;
+            color: #333;
+            border-top: 1px solid #dbeafe;
+            animation: slideDown 0.3s ease;
+        }
+
+        .details-box table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        .details-box th,
+        .details-box td {
+            border: 1px solid #dbeafe;
+            padding: 6px 8px;
+        }
+
+        .details-box th {
+            background: #e0e7ff;
+            color: #1e3a8a;
+            font-weight: 500;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .view-btn {
+            background: #3b82f6;
+            border: none;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .view-btn:hover {
+            background: #2563eb;
         }
     </style>
 </head>
@@ -117,27 +162,101 @@
             <h1>📜 My Grade History</h1>
         </header>
 
-        <table id="history-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Semester</th>
-                    <th>Year</th>
-                    <th>GPA (4.0)</th>
-                    <th>Percent</th>
-                    <th>Grade</th>
-                    <th>Date Saved</th>
-                </tr>
-            </thead>
-            <tbody id="history-body">
-                <tr>
-                    <td colspan="7" class="empty">Loading your records...</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table id="history-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Semester</th>
+                        <th>Year</th>
+                        <th>GPA (4.0)</th>
+                        <th>Percent</th>
+                        <th>Grade</th>
+                        <th>Date Saved</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                    <tr>
+                        <td colspan="8" style="padding: 20px; color: #666;">Loading records...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <script src="{% static 'js/history.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const tbody = document.getElementById("history-body");
+
+            try {
+                const res = await fetch("/api/my-history/");
+                const data = await res.json();
+
+                tbody.innerHTML = "";
+
+                if (!data.length) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="padding: 20px; color:#777;">No records found.</td></tr>`;
+                    return;
+                }
+
+                data.forEach(item => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+            <td>${item.id}</td>
+            <td>${item.semester}</td>
+            <td>${item.year}</td>
+            <td>${item.gpa4.toFixed(2)}</td>
+            <td>${item.total_gpa.toFixed(2)}</td>
+            <td>${item.grade_letter}</td>
+            <td>${new Date(item.created_at).toLocaleString()}</td>
+            <td><button class="view-btn">🔽 View</button></td>
+          `;
+                    tbody.appendChild(row);
+
+                    // 🔽 create hidden row for details
+                    const detailRow = document.createElement("tr");
+                    detailRow.classList.add("details-row");
+                    detailRow.innerHTML = `
+            <td colspan="8">
+              <div class="details-box" style="display:none;">
+                <strong>📘 Subjects in this GPA calculation:</strong>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Subject Name</th>
+                      <th>Score (%)</th>
+                      <th>Credit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${item.subjects
+                            .map(
+                                s =>
+                                    `<tr><td>${s.name}</td><td>${s.score.toFixed(2)}</td><td>${s.credit}</td></tr>`
+                            )
+                            .join("")}
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          `;
+                    tbody.appendChild(detailRow);
+
+                    const btn = row.querySelector(".view-btn");
+                    const box = detailRow.querySelector(".details-box");
+                    btn.addEventListener("click", () => {
+                        const isHidden = box.style.display === "none";
+                        box.style.display = isHidden ? "block" : "none";
+                        btn.textContent = isHidden ? "🔼 Hide" : "🔽 View";
+                    });
+                });
+            } catch (err) {
+                console.error("Error fetching history:", err);
+                tbody.innerHTML = `<tr><td colspan="8" style="padding: 20px; color:red;">Failed to load history.</td></tr>`;
+            }
+        });
+    </script>
 </body>
 
 </html>
