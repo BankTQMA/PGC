@@ -24,6 +24,8 @@ class SubjectSerializer(serializers.Serializer):
 
 class CalculateSerializer(serializers.Serializer):
     subjects = SubjectSerializer(many=True)
+    semester = serializers.CharField()
+    year = serializers.IntegerField()
 
 
 class WhatIfSerializer(serializers.Serializer):
@@ -45,4 +47,13 @@ class GradeResultSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GradeResult
-        fields = ["id", "total_gpa", "gpa4", "grade_letter", "created_at", "subjects"]
+        fields = [
+            "id",
+            "total_gpa",
+            "gpa4",
+            "grade_letter",
+            "semester",
+            "year",
+            "created_at",
+            "subjects",
+        ]

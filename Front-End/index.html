@@ -4,75 +4,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PGC</title>
+    <title>PGC - Home</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .home-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .menu-button {
+            padding: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            background: #1a1a2e;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+        .menu-button:hover {
+            background: #333;
+        }
+        .menu-button-secondary {
+            background: #6c757d;
+        }
+        .menu-button-secondary:hover {
+            background: #5a6268;
+        }
+    </style>
 </head>
 <body>
-
     <div class="container">
         <header>
-            <h1>PGC calculator</h1>
+            <h1>Personal Grade Calculator</h1>
+            <p>Welcome to the best Grade calculator!!</p>
         </header>
 
         <main class="main-content">
-            
-            {% csrf_token %}
-
-            <section class="card semester-card">
-                <h2>Semester 1</h2>
-                <div class="subject-list">
-                    
-                    <div class="subject-row" data-name="Calculus I" data-credit="3.0">
-                        <div class="subject-info">
-                            <strong>MFIT</strong>
-                            <span>(3.0 Credits)</span>
-                        </div>
-                        <div class="subject-score">
-                            <input type="number" class="score-input" min="0" max="100" placeholder="Score">
-                        </div>
-                    </div>
-
-                    <div class="subject-row" data-name="Intro to Programming" data-credit="3.0">
-                        <div class="subject-info">
-                            <strong>ICS</strong>
-                            <span>(3.0 Credits)</span>
-                        </div>
-                        <div class="subject-score">
-                            <input type="number" class="score-input" min="0" max="100" placeholder="Score">
-                        </div>
-                    </div>
-
-                    <div class="subject-row" data-name="Intro to Programming" data-credit="3.0">
-                        <div class="subject-info">
-                            <strong>PSCP</strong>
-                            <span>(3.0 Credits)</span>
-                        </div>
-                        <div class="subject-score">
-                            <input type="number" class="score-input" min="0" max="100" placeholder="Score">
-                        </div>
-                    </div>
-
-                    <div class="subject-row" data-name="Intro to Programming" data-credit="3.0">
-                        <div class="subject-info">
-                            <strong>ITF</strong>
-                            <span>(3.0 Credits)</span>
-                        </div>
-                        <div class="subject-score">
-                            <input type="number" class="score-input" min="0" max="100" placeholder="Score">
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <div class="result-area">
-                <button id="calculate-gpa-btn" class="btn-primary">Calculate Total GPA</button>
-                <div id="final-gpa"></div>
+            <div class="home-menu">
+                <a href="{% url 'record_page' %}" class="menu-button">
+                    Add New Record
+                </a>
+                
+                <a href="{% url 'my_history' %}" class="menu-button menu-button-secondary">
+                    View My History
+                </a>
+                
+                <a href="/admin/" class="menu-button menu-button-secondary">
+                    Admin Panel
+                </a>
             </div>
-
         </main>
     </div>
-
-    <div class="help-icon">?</div>
-    <script src="{% static 'js/app.js' %}"></script>
 </body>
 </html>

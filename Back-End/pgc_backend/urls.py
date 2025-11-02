@@ -21,6 +21,8 @@ from gradecalc import views as gradecalc_views
 
 urlpatterns = [
     path("", gradecalc_views.index_view, name="index"),
+    path("record/", gradecalc_views.record_view, name="record_page"),
+    path("history/", gradecalc_views.history_view, name="history_page"),
     path("admin/", admin.site.urls),
     path("api/", include("gradecalc.urls")),
 ]

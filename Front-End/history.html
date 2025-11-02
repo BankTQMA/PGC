@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PGC - My History</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            background-color: #f4f7ff;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 85%;
+            max-width: 1000px;
+            margin-top: 60px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header {
+            background: linear-gradient(90deg, #3b82f6, #1e3a8a);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        header a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.2s;
+        }
+
+        header a:hover {
+            opacity: 0.8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            padding: 12px 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #f0f4ff;
+            color: #1e3a8a;
+            font-weight: 600;
+            border-bottom: 2px solid #dbeafe;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fbff;
+        }
+
+        tr:hover {
+            background: #e8f0ff;
+        }
+
+        td {
+            color: #333;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <a href="{% url 'index' %}">&larr; Back to Home</a>
+            <h1>📜 My Grade History</h1>
+        </header>
+
+        <table id="history-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Semester</th>
+                    <th>Year</th>
+                    <th>GPA (4.0)</th>
+                    <th>Percent</th>
+                    <th>Grade</th>
+                    <th>Date Saved</th>
+                </tr>
+            </thead>
+            <tbody id="history-body">
+                <tr>
+                    <td colspan="7" class="empty">Loading your records...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="{% static 'js/history.js' %}"></script>
+</body>
+
+</html>
