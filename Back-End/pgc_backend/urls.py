@@ -22,6 +22,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path("", gradecalc_views.index_view, name="index"),
+    path("accounts/", include("django.contrib.auth.urls")),
     path("record/", gradecalc_views.record_view, name="record_page"),
     path("admin/", admin.site.urls),
     path("api/", include("gradecalc.urls")),
