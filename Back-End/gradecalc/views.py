@@ -29,7 +29,7 @@ def login_view(request):
         if user:
             login(request, user)
             return redirect("/")
-    return render(request, "login.html")
+    return render(request, "login.html", {"form": form})
 
 
 @login_required(login_url=LOGIN_URL)
