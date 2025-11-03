@@ -64,6 +64,14 @@ def calculate_grade_post(request):
     total_credits = 0
 
     for subject in subjects:
+        if not subject["components"]:
+            return Response(
+                {
+                    "detail": f"No components found in subject '{subject['subject_name']}'"
+                },
+                status=400,
+            )
+
         weighted_score = sum(
             comp["score"] * (comp["weight"] / 100) for comp in subject["components"]
         )
@@ -87,7 +95,7 @@ def calculate_grade_post(request):
         [
             SubjectRecord(
                 result=result,
-                name=sub["name"],
+                name=sub["subject_name"],
                 score=sum(
                     comp["score"] * (comp["weight"] / 100) for comp in sub["components"]
                 ),
@@ -153,8 +161,8 @@ def register_user(request):
 @permission_classes([IsAuthenticated])
 def gpa_summary(request):
     """
-    รวมผลลัพธ์ทุกวิชาของ user ที่ล็อกอินอยู่
-    และคำนวณ GPA เฉลี่ย (4.0 และเปอร์เซ็นต์)
+    Combine all subject results of the currently logged-in user
+    and calculate the average GPA (both 4.0 scale and percentage)
     """
     user = request.user
     results = GradeResult.objects.filter(owner=user)

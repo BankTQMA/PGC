@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const finalGpaDiv = document.getElementById("final-gpa");
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    // function to add a new row 
+    // Function to add a new row
     const addSubjectRow = () => {
         const row = document.createElement("div");
         row.className = "subject-row dynamic-row";
@@ -55,12 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (name && !isNaN(score) && !isNaN(credit) && credit > 0) {
                 subjectsList.push({
-                    name: name,
+                    subject_name: name,
                     credit: credit,
                     components: [
                         {
-                            name: "Total",
-                            score: Number(score),  // ensure it's numeric
+                            component_name: "Total",
+                            score: Number(score),
                             weight: 100
                         }
                     ]
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const requestBody = { subjects: subjectsList, semester, year };
 
-        console.log("📤 Sending request:", requestBody);
+        console.log("Sending request:", requestBody);
 
         finalGpaDiv.textContent = "Calculating...";
         finalGpaDiv.style.color = "#666";
@@ -95,27 +95,31 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const data = await response.json();
-            console.log("✅ Response:", data);
+            console.log("Response:", data);
 
             if (response.ok) {
-                // ✅ Show both Percent and GPA 4.0
                 finalGpaDiv.innerHTML = `
-                    <div style="color:#007bff; font-weight:600; font-size:1.1rem; display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:1.2rem;">✅</span> 
-                        GPA (4.0): ${data.GPA_4.toFixed(2)} 
-                        | Percent: ${data.GPA_percent} 
-                        (Grade: ${data.Grade})
+                    <div style="
+                        color: #007bff;
+                        font-weight: 600;
+                        font-size: 1.3rem;
+                        text-align: center;
+                        margin-top: 25px;
+                    ">
+                        GPA (4.0): ${data.GPA_4.toFixed(2)} |
+                        Percent: ${data.GPA_percent} |
+                        Grade: ${data.Grade}
                     </div>
                 `;
             } else {
                 let errorMsg = data.detail || JSON.stringify(data);
                 if (data.subjects) errorMsg = "Check subject data.";
-                finalGpaDiv.textContent = `❌ Error: ${errorMsg}`;
+                finalGpaDiv.textContent = `Error: ${errorMsg}`;
                 finalGpaDiv.style.color = "red";
             }
 
         } catch (error) {
-            console.error("❌ Network Error:", error);
+            console.error("Network Error:", error);
             finalGpaDiv.textContent = "A network error occurred.";
             finalGpaDiv.style.color = "red";
         }

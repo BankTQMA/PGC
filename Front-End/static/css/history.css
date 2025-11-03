@@ -1,0 +1,168 @@
+body {
+    background-color: #f4f7ff;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin-top: 60px;
+    background: linear-gradient(120deg, #f0f3ff 0%, #e6e9ff 100%);
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+header {
+    background: linear-gradient(90deg, #3b82f6, #1e3a8a);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.2s;
+}
+
+header a:hover {
+    opacity: 0.8;
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.table-wrapper {
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+th,
+td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+    background: #f0f4ff;
+    color: #1e3a8a;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+tr:nth-child(even) {
+    background-color: #f9fbff;
+}
+
+tr:hover:not(.details-row) {
+    background: #e8f0ff;
+}
+
+.details-row td {
+    background: #f8faff;
+    padding: 0;
+}
+
+.details-box {
+    text-align: left;
+    padding: 15px 25px;
+    font-size: 0.9rem;
+    color: #333;
+    border-top: 1px solid #dbeafe;
+    animation: slideDown 0.3s ease;
+}
+
+.details-box table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+}
+
+.details-box th,
+.details-box td {
+    border: 1px solid #dbeafe;
+    padding: 6px 8px;
+}
+
+.details-box th {
+    background: #e0e7ff;
+    color: #1e3a8a;
+    font-weight: 500;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.view-btn {
+    background: #3b82f6;
+    border: none;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.view-btn:hover {
+    background: #2563eb;
+}
+
+.table-wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #a5b4fc;
+    border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #818cf8;
+}

@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!response.ok) {
             tableBody.innerHTML = `
-                <tr><td colspan="7" class="empty">⚠️ Please login to view your history.</td></tr>
+                <tr><td colspan="7" class="empty">Please login to view your history.</td></tr>
             `;
             return;
         }
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (error) {
         console.error("Error loading history:", error);
         tableBody.innerHTML = `
-            <tr><td colspan="7" class="empty">❌ Error loading data.</td></tr>
+            <tr><td colspan="7" class="empty">Error loading data.</td></tr>
         `;
     }
 });
