@@ -15,24 +15,55 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='GradeResult',
+            name="GradeResult",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('total_score_weighted', models.FloatField(default=0.0)),
-                ('grade_letter', models.CharField(max_length=2)),
-                ('gpa4', models.FloatField(default=0.0)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('owner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("total_score_weighted", models.FloatField(default=0.0)),
+                ("grade_letter", models.CharField(max_length=2)),
+                ("gpa4", models.FloatField(default=0.0)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='SubjectRecord',
+            name="SubjectRecord",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('score', models.FloatField()),
-                ('credit', models.FloatField()),
-                ('result', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subjects', to='gradecalc.graderesult')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("score", models.FloatField()),
+                ("credit", models.FloatField()),
+                (
+                    "result",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="subjects",
+                        to="gradecalc.graderesult",
+                    ),
+                ),
             ],
         ),
     ]
