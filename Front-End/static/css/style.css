@@ -196,3 +196,11 @@ form input[type="password"]:focus {
     border-color: #1a1a2e;
     background: #fff;
 }
+
+
+.error {
+  color: rgb(255, 0, 0);
+  font-size: 0.9em;
+  margin-top: 5px;
+  display: block;
+}
