@@ -10,7 +10,6 @@
 </head>
 
 <body>
-
     <div class="container">
         <header>
             <a href="{% url 'index' %}" class="back-link" title="Back to Home">&larr;</a>
@@ -18,12 +17,10 @@
         </header>
 
         <main class="main-content">
-
             {% csrf_token %}
 
             <section class="card semester-card">
                 <h2>Semester Details</h2>
-
 
                 <div style="margin-bottom: 20px; display: flex; gap: 10px;">
                     <select id="semester-select"
@@ -40,7 +37,7 @@
                 </div>
 
                 <button id="add-subject-btn"
-                    style="background: #6c757d; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px;">
+                    style="background: #000000; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px;">
                     + Add Subject
                 </button>
             </section>
@@ -49,11 +46,37 @@
                 <button id="calculate-gpa-btn" class="btn-primary">Calculate & Save</button>
                 <div id="final-gpa"></div>
             </div>
-
         </main>
     </div>
+
     <script src="{% static 'js/app.js' %}"></script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const token = localStorage.getItem("access");
+            const refresh = localStorage.getItem("refresh");
+            if (!token) {
+                window.location.href = "/login/";
+                return;
+            }
+
+            try {
+                const res = await fetch("/api/gpa-tracking/", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+
+                if (res.status === 401) {
+                    console.warn("Token expired or invalid, redirecting to login...");
+                    localStorage.removeItem("access");
+                    localStorage.removeItem("refresh");
+                    window.location.href = "/login/";
+                }
+            } catch (err) {
+                console.error("Error verifying token:", err);
+                window.location.href = "/login/";
+            }
+        });
+    </script>
 </body>
 
 </html>

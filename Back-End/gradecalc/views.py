@@ -2,51 +2,61 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.contrib.auth.models import User
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import GradeResult, SubjectRecord
 from .serializers import CalculateSerializer, WhatIfSerializer, GradeResultSerializer
-from django.shortcuts import render
-import os
 from django.conf import settings
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
-from django.conf.global_settings import (
-    LOGIN_URL,
-    LOGIN_REDIRECT_URL,
-    LOGOUT_REDIRECT_URL,
-)
-from .forms import LoginForm
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+from django.http import JsonResponse
+
+jwt_authenticator = JWTAuthentication()
 
 
+def jwt_login_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        try:
+            # พยายาม authenticate ด้วย JWT จาก Header
+            user_auth_tuple = jwt_authenticator.authenticate(request)
+            if user_auth_tuple is not None:
+                request.user, _ = user_auth_tuple
+            else:
+                # ไม่มี JWT ใน Header ก็ไม่เป็นไร ให้ frontend ตรวจเอง
+                raise AuthenticationFailed()
+        except AuthenticationFailed:
+            # ถ้าเป็น request ปกติ (HTML) -> ให้ render ได้ปกติ
+            if request.headers.get("Accept", "").startswith("text/html"):
+                return view_func(request, *args, **kwargs)
+
+            # ถ้าเป็น API call (JSON) -> ต้องล็อกอิน
+            return JsonResponse({"detail": "Authentication required."}, status=401)
+
+        return view_func(request, *args, **kwargs)
+
+    return _wrapped_view
+
+
+# ---------- หน้าเว็บ ----------
 def login_view(request):
-    form = LoginForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        user = authenticate(
-            request=request,
-            username=form.cleaned_data["username"],
-            password=form.cleaned_data["password"],
-        )
-        if user:
-            login(request, user)
-            return redirect("/")
-    return render(request, "login.html", {"form": form})
+    return render(request, "registration/login.html")
 
 
-@login_required(login_url=LOGIN_URL)
+@jwt_login_required
 def index_view(request):
     return render(request, "index.html")
 
 
-@login_required(login_url=LOGIN_URL)
+@jwt_login_required
 def record_view(request):
     return render(request, "record.html")
 
 
+@jwt_login_required
 def history_view(request):
     return render(request, "history.html")
 
 
+# ---------- ฟังก์ชันคำนวณเกรด ----------
 def score_to_grade(score):
     if score >= 80:
         return "A"
@@ -188,10 +198,6 @@ def register_user(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def gpa_summary(request):
-    """
-    Combine all subject results of the currently logged-in user
-    and calculate the average GPA (both 4.0 scale and percentage)
-    """
     user = request.user
     results = GradeResult.objects.filter(owner=user)
 

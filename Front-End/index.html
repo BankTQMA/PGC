@@ -38,6 +38,15 @@
         .menu-button-secondary:hover {
             background: #5a6268;
         }
+
+        .logout-button {
+            background: #dc3545;
+            margin-top: 30px;
+        }
+
+        .logout-button:hover {
+            background: #f1939b;
+        }
     </style>
 </head>
 
@@ -50,7 +59,7 @@
 
         <main class="main-content">
             <div class="home-menu">
-                <a href="{% url 'record_page' %}" class="menu-button">
+                <a href="/add-record/" class="menu-button">
                     Add New Record
                 </a>
 
@@ -61,9 +70,32 @@
                 <a href="/admin/" class="menu-button menu-button-secondary">
                     Admin Panel
                 </a>
+
+                <button id="logout-btn" class="menu-button logout-button">
+                    Logout
+                </button>
             </div>
         </main>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("access");
+
+
+            if (!token) {
+                window.location.href = "/login/";
+                return;
+            }
+
+            const logoutBtn = document.getElementById("logout-btn");
+            logoutBtn.addEventListener("click", () => {
+                localStorage.removeItem("access");
+                localStorage.removeItem("refresh");
+                window.location.href = "/login/";
+            });
+        });
+    </script>
 </body>
 
 </html>

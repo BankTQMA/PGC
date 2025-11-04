@@ -7,6 +7,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PGC - Sign In</title>
   <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(180deg, #f2f3ff, #eef1ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      color: #1a1a2e;
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    form.card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+      padding: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background-color: #fafafa;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.2s ease;
+    }
+
+    input:focus {
+      border-color: #007bff;
+      background: #fff;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background: #1a1a2e;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    .btn-primary:hover {
+      background: #2a2a4a;
+    }
+
+    .loading {
+      text-align: center;
+      color: #777;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
@@ -15,23 +107,81 @@
       <h1>Sign In</h1>
       <p>Access your GPA history and features</p>
     </header>
-  </div>
 
-  <div class="container">
-    <form method="post" class="card" action="{% url 'login' %}">
-      {% csrf_token %}
+    <form method="post" class="card">
       <div class="form-group">
-        {{ form.username.label_tag }} {{ form.username }}
+        <label for="id_username">Username</label>
+        <input id="id_username" type="text" class="form-control" placeholder="Enter your Username" required />
       </div>
 
       <div class="form-group">
-        {{ form.password.label_tag }} {{ form.password }}
+        <label for="id_password">Password</label>
+        <input id="id_password" type="password" class="form-control" placeholder="Enter your Password" required />
       </div>
-      <div style="text-align: center; margin-top: 30px">
+
+      <div style="text-align: center; margin-top: 25px">
         <button class="btn-primary" type="submit">Login</button>
       </div>
+
+      <div class="loading" id="login-status">Logging in...</div>
     </form>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.querySelector("form");
+      const statusText = document.getElementById("login-status");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const username = document.querySelector("#id_username").value.trim();
+        const password = document.querySelector("#id_password").value.trim();
+
+        if (!username || !password) {
+          alert("Please enter both username and password.");
+          return;
+        }
+
+        statusText.style.display = "block";
+        statusText.textContent = "Logging in...";
+
+        try {
+          const response = await fetch("/api/auth/login/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            console.log("Login success, saving tokens...");
+            localStorage.setItem("access", data.access);
+            localStorage.setItem("refresh", data.refresh);
+
+            statusText.textContent = "Login successful! Redirecting...";
+            statusText.style.color = "green";
+
+            setTimeout(() => {
+              console.log("Redirecting to / ...");
+              window.location.replace("/");
+            }, 1000);
+          } else {
+            statusText.style.color = "red";
+            statusText.textContent = "Login failed. Please check your credentials.";
+            alert("Login failed: " + (data.detail || "Invalid credentials"));
+          }
+        } catch (error) {
+          console.error("Error during login:", error);
+          statusText.style.color = "red";
+          statusText.textContent = "Network error — please try again.";
+        }
+      });
+    });
+  </script>
 
   {% if debug %}
   <script src="{% url 'django_browser_reload:reload' %}"></script>
