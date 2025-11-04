@@ -2,73 +2,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     const tbody = document.getElementById("history-body");
     const token = localStorage.getItem("access");
 
-    // ถ้าไม่มี token ให้เด้งกลับ login
+    // ถ้าไม่มี token → กลับไปหน้า login
     if (!token) {
-        tbody.innerHTML = `
-            <tr><td colspan="8" style="padding:20px; color:red;">Please log in to view your history.</td></tr>
-        `;
-        setTimeout(() => (window.location.href = "/login/"), 1000);
+        window.location.href = "/login/";
         return;
     }
 
     try {
-        console.log("Fetching history with token:", token.substring(0, 20) + "...");
-
         const res = await fetch("/api/my-history/", {
             method: "GET",
             headers: {
-                "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
             },
         });
 
-        console.log("Response status:", res.status);
-
-        if (res.status === 401) {
-            console.warn("Access token expired → trying refresh token...");
-
-            // ใช้ refresh token ถ้ามี
-            const refresh = localStorage.getItem("refresh");
-            if (refresh) {
-                const refreshRes = await fetch("/api/auth/refresh/", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ refresh }),
-                });
-                const refreshData = await refreshRes.json();
-
-                if (refreshData.access) {
-                    localStorage.setItem("access", refreshData.access);
-                    console.log("Token refreshed, reloading page...");
-                    location.reload();
-                    return;
-                } else {
-                    console.error("Refresh failed", refreshData);
-                    window.location.href = "/login/";
-                    return;
-                }
-            } else {
-                window.location.href = "/login/";
-                return;
-            }
+        if (!res.ok) {
+            tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:red;">Error: ${res.status} Unauthorized</td></tr>`;
+            return;
         }
 
         const data = await res.json();
-
         tbody.innerHTML = "";
 
-        if (!res.ok) {
-            tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:red;">Error: ${data.detail || "Failed to fetch history."
-                }</td></tr>`;
-            return;
-        }
-
         if (!data.length) {
-            tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:#777;">No records found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="padding: 20px; color:#777;">No records found.</td></tr>`;
             return;
         }
 
-        data.forEach((item) => {
+        data.forEach(item => {
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${item.id}</td>
@@ -78,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <td>${item.total_gpa.toFixed(2)}</td>
                 <td>${item.grade_letter}</td>
                 <td>${new Date(item.created_at).toLocaleString()}</td>
-                <td><button class="view-btn">View</button></td>
+                <td><button class="view-btn">🔽 View</button></td>
             `;
             tbody.appendChild(row);
 
@@ -95,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             <tbody>
                                 ${item.subjects
                     .map(
-                        (s) =>
+                        s =>
                             `<tr><td>${s.subject_name}</td><td>${s.score.toFixed(
                                 2
                             )}</td><td>${s.credit}</td></tr>`
@@ -113,7 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             btn.addEventListener("click", () => {
                 const isHidden = box.style.display === "none";
                 box.style.display = isHidden ? "block" : "none";
-                btn.textContent = isHidden ? "Hide" : "View";
+                btn.textContent = isHidden ? "🔼 Hide" : "🔽 View";
             });
         });
     } catch (err) {

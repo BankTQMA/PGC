@@ -12,16 +12,23 @@ class SubjectRecordInline(admin.TabularInline):
     extra = 0
 
 
+@admin.register(GradeResult)
 class GradeResultAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "total_gpa",
-        "grade_letter",
-        "gpa4",
+        "owner",
         "semester",
         "year",
-        "owner",
+        "total_gpa",
+        "grade_letter",
         "created_at",
     )
+    list_filter = ("semester", "year", "owner")
+    search_fields = ("owner__username", "semester", "year", "grade_letter")
     ordering = ("-created_at",)
-    inlines = [SubjectRecordInline]
+
+
+class SubjectRecordAdmin(admin.ModelAdmin):
+    list_display = ("id", "result", "name", "credit", "score")
+    search_fields = ("name",)
+    ordering = ("id",)
