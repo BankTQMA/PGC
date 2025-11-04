@@ -62,8 +62,7 @@ h1 {
 }
 
 .table-wrapper {
-  max-height: 480px;
-  overflow-y: auto;
+  min-height: 80vh;
 }
 
 table {
