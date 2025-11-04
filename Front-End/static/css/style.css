@@ -9,15 +9,17 @@ body {
     Helvetica, Arial, sans-serif;
   background: linear-gradient(120deg, #f0f3ff 0%, #e6e9ff 100%);
   color: #333;
-  min-height: 80vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  padding-top: 8vh;
   animation: fadeIn 0.6s ease;
 }
 
 .container {
-  width: 40%;
+  width: 90%;
+  min-width: 400px;
   max-width: 600px;
   margin: 100px auto;
   padding: 20px 20px 5px 20px;
