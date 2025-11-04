@@ -25,6 +25,16 @@
         <div class="form-group">
           {{ form.password.label_tag }} {{ form.password }}
         </div>
+
+        {% for field, errors in form.errors.items %} {% for error in errors %}
+        <p class="error">* {{ error }}</p>
+        {% endfor %} {% endfor %}
+
+        <div style="display: flex; gap: 4px; margin-top: 10px">
+          <p>New user?</p>
+          <a href="{% url 'register' %}">Register</a>
+        </div>
+
         <div style="text-align: center; margin-top: 30px">
           <button class="btn-primary" type="submit">Login</button>
         </div>
