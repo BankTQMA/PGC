@@ -4,26 +4,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PGC - Sign In</title>
+    <title>PGC - Registration</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
   </head>
   <body>
     <div class="container">
       <header>
-        <h1>Sign In</h1>
+        <h1>Create New Account</h1>
         <p>Access your GPA history and features</p>
       </header>
     </div>
 
     <div class="container">
-      <form method="post" class="card" action="{% url 'login' %}">
+      <form method="post" class="card" action="{% url 'register' %}">
         {% csrf_token %}
         <div class="form-group">
-          {{ form.username.label_tag }} {{ form.username }}
+          {{ form.username.label_tag }} {{ form.username }} {{ for }}
         </div>
 
         <div class="form-group">
-          {{ form.password.label_tag }} {{ form.password }}
+          {{ form.password1.label_tag }} {{ form.password1 }}
+        </div>
+
+        <div class="form-group">
+          {{ form.password2.label_tag }} {{ form.password2 }}
         </div>
 
         {% for field, errors in form.errors.items %} {% for error in errors %}
@@ -31,12 +35,12 @@
         {% endfor %} {% endfor %}
 
         <div style="display: flex; gap: 4px; margin-top: 10px">
-          <p>New user?</p>
-          <a href="{% url 'register' %}">Register</a>
+          <p>Already had an account?</p>
+          <a href="{% url 'login' %}">Login</a>
         </div>
 
         <div style="text-align: center; margin-top: 30px">
-          <button class="btn-primary" type="submit">Login</button>
+          <button class="btn-primary" type="submit">Register</button>
         </div>
       </form>
     </div>
