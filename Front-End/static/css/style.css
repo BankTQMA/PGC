@@ -133,6 +133,23 @@ header p {
   box-shadow: 0 6px 10px rgba(59, 130, 246, 0.35);
 }
 
+.btn-secondary {
+  margin-top: 15px;
+  height: 20;
+  background: #3b82f6;
+  border: none;
+  color: white;
+  padding: 6px 15px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #2563eb;
+}
+
 #final-gpa {
   font-size: 1.75rem;
   font-weight: 600;
