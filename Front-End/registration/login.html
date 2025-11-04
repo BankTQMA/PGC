@@ -13,9 +13,6 @@
         <h1>Sign In</h1>
         <p>Access your GPA history and features</p>
       </header>
-    </div>
-
-    <div class="container">
       <form method="post" class="card" action="{% url 'login' %}">
         {% csrf_token %}
         <div class="form-group">
