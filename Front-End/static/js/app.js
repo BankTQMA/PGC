@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Function to add a new row
   const addSubjectRow = () => {
+    const card = document.querySelector(".semester-card");
     const row = document.createElement("div");
     row.className = "subject-row dynamic-row";
 
@@ -35,6 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
         `;
     subjectListDiv.appendChild(row);
+
+    // Ease card (background) animations
+    requestAnimationFrame(() => row.classList.add("show"));
+    const newHeight = card.scrollHeight;
+    card.style.maxHeight = newHeight + "px";
   };
 
   // Listen for 'Add Subject' button click
@@ -47,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   calcGpaBtn.addEventListener("click", async () => {
     const subjectsList = [];
     const subjectRows = document.querySelectorAll(".dynamic-row");
+    const card = document.querySelector(".semester-card");
 
     subjectRows.forEach((row) => {
       const name = row.querySelector(".subject-name-input").value.trim();
@@ -71,6 +78,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (subjectsList.length === 0) {
       finalGpaDiv.textContent = "Please add at least one valid subject.";
       finalGpaDiv.style.color = "red";
+      // Ease card (background) animations
+      requestAnimationFrame(() => row.classList.add("show"));
+      const newHeight = card.scrollHeight;
+      card.style.maxHeight = newHeight + "px";
       return;
     }
 
@@ -116,5 +127,10 @@ document.addEventListener("DOMContentLoaded", () => {
       finalGpaDiv.textContent = "A network error occurred.";
       finalGpaDiv.style.color = "red";
     }
+
+    // Ease card (background) animations
+    requestAnimationFrame(() => row.classList.add("show"));
+    const newHeight = card.scrollHeight;
+    card.style.maxHeight = newHeight + "px";
   });
 });

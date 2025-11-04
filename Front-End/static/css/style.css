@@ -63,6 +63,12 @@ header p {
   color: #1e3a8a;
 }
 
+.semester-card {
+  overflow: hidden;
+  transition: max-height 0.2s ease;
+  max-height: 250px;
+}
+
 .subject-list {
   display: flex;
   flex-direction: column;
@@ -70,9 +76,17 @@ header p {
 }
 
 .subject-row {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.subject-row.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .subject-info strong {
