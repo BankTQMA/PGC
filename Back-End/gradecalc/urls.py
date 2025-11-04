@@ -3,6 +3,8 @@ from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
+    path("", views.index_view, name="index"),
+    path("record/", views.record_view, name="record_page"),
     path("calculate/post/", views.calculate_grade_post, name="calculate_post"),
     path("my-history/", views.my_history, name="my_history"),
     path("whatif/", views.what_if, name="what_if"),

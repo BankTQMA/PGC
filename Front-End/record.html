@@ -1,12 +1,14 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PGC - Add Record</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
+
 <body>
 
     <div class="container">
@@ -16,30 +18,33 @@
         </header>
 
         <main class="main-content">
-            
+
             {% csrf_token %}
 
             <section class="card semester-card">
                 <h2>Semester Details</h2>
-                
-                
+
+
                 <div style="margin-bottom: 20px; display: flex; gap: 10px;">
-                    <select id="semester-select" style="padding: 10px; border-radius: 8px; border: none; background: #f4f4f7; font-size: 1rem;">
+                    <select id="semester-select"
+                        style="padding: 10px; border-radius: 8px; border: none; background: #f4f4f7; font-size: 1rem;">
                         <option value="1">Semester 1</option>
                         <option value="2">Semester 2</option>
                     </select>
-                    <select id="year-select" style="padding: 10px; border-radius: 8px; border: none; background: #f4f4f7; font-size: 1rem;">
-                        </select>
+                    <select id="year-select"
+                        style="padding: 10px; border-radius: 8px; border: none; background: #f4f4f7; font-size: 1rem;">
+                    </select>
                 </div>
 
                 <div id="dynamic-subject-list" class="subject-list">
-                    </div>
+                </div>
 
-                <button id="add-subject-btn" style="background: #6c757d; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px;">
+                <button id="add-subject-btn"
+                    style="background: #6c757d; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px;">
                     + Add Subject
                 </button>
             </section>
-            
+
             <div class="result-area">
                 <button id="calculate-gpa-btn" class="btn-primary">Calculate & Save</button>
                 <div id="final-gpa"></div>
@@ -48,5 +53,7 @@
         </main>
     </div>
     <script src="{% static 'js/app.js' %}"></script>
+
 </body>
+
 </html>
