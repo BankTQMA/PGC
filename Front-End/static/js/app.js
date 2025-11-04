@@ -26,12 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
     row.className = "subject-row dynamic-row";
 
     row.innerHTML = `
-            <div class="subject-info" style="flex-grow: 1; display: flex; gap: 10px;">
-                <input type="text" class="subject-name-input" placeholder="Subject Name" style="width: 60%; padding: 10px; border: none; background: #f4f4f7; border-radius: 8px; font-size: 1rem;">
-                <input type="number" class="credit-input" placeholder="Credits" min="0.5" max="6" step="0.5" style="width: 35%; padding: 10px; border: none; background: #f4f4f7; border-radius: 8px; font-size: 1rem; text-align: center;">
+            <div class="subject-info">
+                <input type="text" class="subject-name-input" placeholder="Subject Name">
+                <input type="number" class="credit-input" placeholder="Credits" min="0.5" max="6" step="0.5">
             </div>
             <div class="subject-score">
-                <input type="number" class="score-input" min="0" max="100" placeholder="Score" style="width: 100px; padding: 10px; border: none; background: #f4f4f7; border-radius: 8px; font-size: 1rem; text-align: center;">
+                <input type="number" class="score-input" min="0" max="100" placeholder="Score">
             </div>
         `;
     subjectListDiv.appendChild(row);
@@ -99,13 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         finalGpaDiv.innerHTML = `
-                    <div style="
-                        color: #007bff;
-                        font-weight: 600;
-                        font-size: 1.3rem;
-                        text-align: center;
-                        margin-top: 25px;
-                    ">
+                    <div>
                         GPA (4.0): ${data.GPA_4.toFixed(2)} |
                         Percent: ${data.GPA_percent} |
                         Grade: ${data.Grade}
