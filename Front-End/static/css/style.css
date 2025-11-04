@@ -101,17 +101,6 @@ header p {
   margin-left: 8px;
 }
 
-.subject-score input {
-  width: 100px;
-  padding: 10px;
-  border: 1px solid #dbeafe;
-  background: #f4f7ff;
-  border-radius: 8px;
-  font-size: 1rem;
-  text-align: center;
-  transition: all 0.2s ease;
-}
-
 .subject-score input:focus {
   outline: none;
   border-color: #3b82f6;
@@ -322,18 +311,15 @@ textarea:disabled {
 
 .subject-name-input {
   width: 60%;
-  padding: 10px 12px;
 }
 
 .credit-input {
-  width: 35%;
-  padding: 10px 12px;
+  width: 20%;
   text-align: center;
 }
 
 .score-input {
-  width: 100px;
-  padding: 10px 12px;
+  width: 20%;
   text-align: center;
 }
 

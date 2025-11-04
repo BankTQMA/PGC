@@ -30,8 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="subject-info">
                 <input type="text" class="subject-name-input" placeholder="Subject Name">
                 <input type="number" class="credit-input" placeholder="Credits" min="0.5" max="6" step="0.5">
-            </div>
-            <div class="subject-score">
                 <input type="number" class="score-input" min="0" max="100" placeholder="Score">
             </div>
         `;
