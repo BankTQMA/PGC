@@ -1,3 +1,10 @@
+.text-footer {
+  display: flex;
+  margin-top: 15px;
+  gap: 4px;
+  justify-content: flex-start;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
