@@ -217,7 +217,6 @@ input[type="number"],
 input[type="email"],
 input[type="password"],
 select {
-  width: 100%;
   padding: 10px 12px;
   border: 1px solid #dbeafe;
   border-radius: 8px;
@@ -285,6 +284,16 @@ textarea:disabled {
   background: #f3f4f6;
   border-color: #e5e7eb;
   box-shadow: none;
+}
+
+.semester-dropdown {
+  display: flex;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.semester-dropdown select {
+  width: 100%;
 }
 
 .dynamic-row {
