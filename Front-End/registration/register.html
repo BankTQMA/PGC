@@ -14,9 +14,7 @@
         <h1>Create New Account</h1>
         <p>Access your GPA history and features</p>
       </header>
-    </div>
 
-    <div class="container">
       <form method="post" class="card" action="{% url 'register' %}">
         {% csrf_token %}
         <div class="form-group">
