@@ -9,7 +9,6 @@ from django.shortcuts import render
 import os
 from django.conf import settings
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.conf.global_settings import (
     LOGIN_URL,
@@ -25,10 +24,8 @@ def register_view(request):
         if form.is_valid():
             form.save()
             return redirect("login")
-        else:
-            form.add_error(None, "Invalid username or password.")
     else:
-        form = UserCreationForm()
+        form = UserCreationForm()  # create an empty form for GET requests
     return render(request, "registration/register.html", {"form": form})
 
 
