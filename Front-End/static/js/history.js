@@ -2,28 +2,64 @@ document.addEventListener("DOMContentLoaded", async () => {
     const tbody = document.getElementById("history-body");
     const token = localStorage.getItem("access");
 
+    // ถ้าไม่มี token ให้เด้งกลับ login
     if (!token) {
         tbody.innerHTML = `
             <tr><td colspan="8" style="padding:20px; color:red;">Please log in to view your history.</td></tr>
         `;
+        setTimeout(() => (window.location.href = "/login/"), 1000);
         return;
     }
 
     try {
+        console.log("Fetching history with token:", token.substring(0, 20) + "...");
+
         const res = await fetch("/api/my-history/", {
             method: "GET",
             headers: {
-                "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
             },
         });
+
+        console.log("Response status:", res.status);
+
+        if (res.status === 401) {
+            console.warn("Access token expired → trying refresh token...");
+
+            // ใช้ refresh token ถ้ามี
+            const refresh = localStorage.getItem("refresh");
+            if (refresh) {
+                const refreshRes = await fetch("/api/auth/refresh/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ refresh }),
+                });
+                const refreshData = await refreshRes.json();
+
+                if (refreshData.access) {
+                    localStorage.setItem("access", refreshData.access);
+                    console.log("Token refreshed, reloading page...");
+                    location.reload();
+                    return;
+                } else {
+                    console.error("Refresh failed", refreshData);
+                    window.location.href = "/login/";
+                    return;
+                }
+            } else {
+                window.location.href = "/login/";
+                return;
+            }
+        }
 
         const data = await res.json();
 
         tbody.innerHTML = "";
 
         if (!res.ok) {
-            tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:red;">Error: ${data.detail || "Failed to fetch history."}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:red;">Error: ${data.detail || "Failed to fetch history."
+                }</td></tr>`;
             return;
         }
 
@@ -32,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        data.forEach(item => {
+        data.forEach((item) => {
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${item.id}</td>
@@ -57,9 +93,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 <tr><th>Subject Name</th><th>Score (%)</th><th>Credit</th></tr>
                             </thead>
                             <tbody>
-                                ${item.subjects.map(s =>
-                `<tr><td>${s.subject_name}</td><td>${s.score.toFixed(2)}</td><td>${s.credit}</td></tr>`
-            ).join("")}
+                                ${item.subjects
+                    .map(
+                        (s) =>
+                            `<tr><td>${s.subject_name}</td><td>${s.score.toFixed(
+                                2
+                            )}</td><td>${s.credit}</td></tr>`
+                    )
+                    .join("")}
                             </tbody>
                         </table>
                     </div>
