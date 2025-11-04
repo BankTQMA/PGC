@@ -9,7 +9,7 @@ body {
     Helvetica, Arial, sans-serif;
   background: linear-gradient(120deg, #f0f3ff 0%, #e6e9ff 100%);
   color: #333;
-  min-height: 100vh;
+  min-height: 80vh;
   display: flex;
   justify-content: center;
   align-items: center;
