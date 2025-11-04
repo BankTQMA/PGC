@@ -3,3 +3,10 @@
   flex-direction: column;
   margin-bottom: 10px;
 }
+
+.error {
+  color: rgb(255, 0, 0);
+  font-size: 0.9em;
+  margin-top: 5px;
+  display: block;
+}
