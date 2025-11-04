@@ -79,7 +79,7 @@ def letter_to_gpa4(letter):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def calculate_grade_post(request):
     serializer = CalculateSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -123,7 +123,7 @@ def calculate_grade_post(request):
         [
             SubjectRecord(
                 result=result,
-                name=sub["subject_name"],
+                name=sub.get("subject_name") or sub.get("name"),
                 score=sum(
                     comp["score"] * (comp["weight"] / 100) for comp in sub["components"]
                 ),
@@ -144,9 +144,9 @@ def calculate_grade_post(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def my_history(request):
-    results = GradeResult.objects.all().order_by("-created_at")
+    results = GradeResult.objects.filter(owner=request.user).order_by("-created_at")
     return Response(GradeResultSerializer(results, many=True).data)
 
 
