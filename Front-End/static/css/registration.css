@@ -17,7 +17,7 @@
 }
 
 .error {
-  color: rgb(255, 0, 0);
+  color: rgba(255, 0, 0, 0.8);
   font-size: 0.9em;
   margin-top: 5px;
   display: block;
