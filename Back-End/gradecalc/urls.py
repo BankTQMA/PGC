@@ -13,5 +13,4 @@ urlpatterns = [
     path("auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("summary/", views.gpa_summary, name="gpa_summary"),
     path("gpa-tracking/", views.gpa_tracking, name="gpa_tracking"),
-    path("record/", views.record_view, name="record_page"),
 ]
