@@ -16,21 +16,20 @@ from django.conf.global_settings import (
     LOGIN_REDIRECT_URL,
     LOGOUT_REDIRECT_URL,
 )
-from .forms import LoginForm
+from django.contrib.auth.forms import UserCreationForm
 
 
-def login_view(request):
-    form = LoginForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        user = authenticate(
-            request=request,
-            username=form.cleaned_data["username"],
-            password=form.cleaned_data["password"],
-        )
-        if user:
-            login(request, user)
-            return redirect("/")
-    return render(request, "login.html", {"form": form})
+def register_view(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("login")
+        else:
+            form.add_error(None, "Invalid username or password.")
+    else:
+        form = UserCreationForm()
+    return render(request, "registration/register.html", {"form": form})
 
 
 @login_required(login_url=LOGIN_URL)
