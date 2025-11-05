@@ -34,6 +34,19 @@ body {
   margin-bottom: 20px;
 }
 
+header {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0px;
+  margin: 0;
+}
+
+header p {
+  color: #666;
+  margin: 0 0 0 0;
+}
+
 select,
 input,
 button {
