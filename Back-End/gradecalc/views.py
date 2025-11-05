@@ -3,32 +3,35 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from .models import GradeResult, SubjectRecord
-from .serializers import CalculateSerializer, WhatIfSerializer, GradeResultSerializer
+from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
+from django.http import JsonResponse
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from django.http import JsonResponse
+from .models import GradeResult, SubjectRecord
+from .serializers import CalculateSerializer, WhatIfSerializer, GradeResultSerializer
 
 jwt_authenticator = JWTAuthentication()
 
 
+# ---------- JWT + Session Integration ----------
 def jwt_login_required(view_func):
+    """Decorator ที่ให้หน้าเว็บใช้ได้ทั้ง JWT และ session-based login"""
+
     def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return view_func(request, *args, **kwargs)
         try:
-            # พยายาม authenticate ด้วย JWT จาก Header
             user_auth_tuple = jwt_authenticator.authenticate(request)
             if user_auth_tuple is not None:
                 request.user, _ = user_auth_tuple
             else:
-                # ไม่มี JWT ใน Header ก็ไม่เป็นไร ให้ frontend ตรวจเอง
                 raise AuthenticationFailed()
         except AuthenticationFailed:
-            # ถ้าเป็น request ปกติ (HTML) -> ให้ render ได้ปกติ
+            # ถ้าเป็นหน้า HTML -> render หน้า login
             if request.headers.get("Accept", "").startswith("text/html"):
-                return view_func(request, *args, **kwargs)
-
-            # ถ้าเป็น API call (JSON) -> ต้องล็อกอิน
+                return redirect("/login/")
+            # ถ้าเป็น API -> ส่ง error JSON
             return JsonResponse({"detail": "Authentication required."}, status=401)
 
         return view_func(request, *args, **kwargs)
@@ -36,9 +39,21 @@ def jwt_login_required(view_func):
     return _wrapped_view
 
 
-# ---------- หน้าเว็บ ----------
+# ---------- หน้าเว็บหลัก ----------
 def login_view(request):
     return render(request, "registration/login.html")
+
+
+def register_view(request):
+    """ใช้ form Django แบบเพื่อนสร้าง user"""
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("/login/")
+    else:
+        form = UserCreationForm()
+    return render(request, "registration/register.html", {"form": form})
 
 
 @jwt_login_required
@@ -200,14 +215,12 @@ def register_user(request):
 def gpa_summary(request):
     user = request.user
     results = GradeResult.objects.filter(owner=user)
-
     if not results.exists():
         return Response({"average_percent": 0, "average_gpa4": 0, "total_subjects": 0})
 
     total_score = sum(r.total_gpa for r in results)
     total_gpa4 = sum(r.gpa4 for r in results)
     count = results.count()
-
     avg_percent = round(total_score / count, 2)
     avg_gpa4 = round(total_gpa4 / count, 2)
 

@@ -3,99 +3,102 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PGC - Home</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <style>
-        .home-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-top: 40px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PGC - Home</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+  <style>
+    .logout-button {
+      background: #dc3545;
+      margin-top: 30px;
+    }
 
-        .menu-button {
-            padding: 20px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            text-align: center;
-            text-decoration: none;
-            color: white;
-            background: #1a1a2e;
-            border-radius: 12px;
-            transition: background 0.2s;
-        }
-
-        .menu-button:hover {
-            background: #333;
-        }
-
-        .menu-button-secondary {
-            background: #6c757d;
-        }
-
-        .menu-button-secondary:hover {
-            background: #5a6268;
-        }
-
-        .logout-button {
-            background: #dc3545;
-            margin-top: 30px;
-        }
-
-        .logout-button:hover {
-            background: #f1939b;
-        }
-    </style>
+    .logout-button:hover {
+      background: #b52d38;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <h1>Personal Grade Calculator</h1>
-            <p>Welcome to the best Grade calculator!!</p>
-        </header>
+  <div class="container">
+    <header>
+      <h1>Personal Grade Calculator</h1>
+      <p>Welcome to the best Grade calculator!!</p>
+    </header>
 
-        <main class="main-content">
-            <div class="home-menu">
-                <a href="/add-record/" class="menu-button">
-                    Add New Record
-                </a>
+    <main class="main-content">
+      <div class="home-menu">
+        <a href="/add-record/" class="menu-button">Add New Record</a>
 
-                <a href="{% url 'history_page' %}" class="menu-button menu-button-secondary">
-                    View My History
-                </a>
+        <a href="{% url 'history_page' %}" class="menu-button menu-button-secondary">
+          View My History
+        </a>
 
-                <a href="/admin/" class="menu-button menu-button-secondary">
-                    Admin Panel
-                </a>
+        <a href="/admin/" class="menu-button menu-button-secondary">
+          Admin Panel
+        </a>
 
-                <button id="logout-btn" class="menu-button logout-button">
-                    Logout
-                </button>
-            </div>
-        </main>
-    </div>
+        <button id="logout-btn" class="menu-button logout-button">
+          Log Out
+        </button>
+      </div>
+    </main>
+  </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const token = localStorage.getItem("access");
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("access");
+      const refresh = localStorage.getItem("refresh");
 
+      if (!token) {
+        window.location.href = "/login/";
+        return;
+      }
 
-            if (!token) {
-                window.location.href = "/login/";
-                return;
-            }
-
-            const logoutBtn = document.getElementById("logout-btn");
-            logoutBtn.addEventListener("click", () => {
-                localStorage.removeItem("access");
-                localStorage.removeItem("refresh");
-                window.location.href = "/login/";
-            });
+      try {
+        const res = await fetch("/api/gpa-tracking/", {
+          headers: { Authorization: "Bearer " + token },
         });
-    </script>
+
+        // ถ้า token หมดอายุ ให้ลอง refresh
+        if (res.status === 401 && refresh) {
+          console.log("Access expired. Trying refresh...");
+          const refreshRes = await fetch("/api/auth/refresh/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refresh }),
+          });
+
+          const data = await refreshRes.json();
+          if (refreshRes.ok && data.access) {
+            localStorage.setItem("access", data.access);
+            console.log("Token refreshed successfully.");
+          } else {
+            console.warn("Refresh failed, redirecting...");
+            localStorage.removeItem("access");
+            localStorage.removeItem("refresh");
+            window.location.href = "/login/";
+          }
+        } else if (res.status === 401) {
+          console.warn("Token invalid, redirecting...");
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
+          window.location.href = "/login/";
+        }
+      } catch (err) {
+        console.error("Error verifying token:", err);
+        window.location.href = "/login/";
+      }
+
+      const logoutBtn = document.getElementById("logout-btn");
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        window.location.href = "/login/";
+      });
+    });
+  </script>
 </body>
 
 </html>

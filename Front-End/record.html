@@ -3,80 +3,102 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PGC - Add Record</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PGC - Add Record</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <a href="{% url 'index' %}" class="back-link" title="Back to Home">&larr;</a>
-            <h1>Add New Record</h1>
-        </header>
+  <div class="container">
+    <header>
+      <a href="{% url 'index' %}" class="back-link" title="Back to Home">
+        &larr;
+      </a>
+      <h1>Add New Record</h1>
+    </header>
 
-        <main class="main-content">
-            {% csrf_token %}
+    <main class="main-content">
+      {% csrf_token %}
 
-            <section class="card semester-card">
-                <h2>Semester Details</h2>
+      <section class="card semester-card">
+        <h2>Semester Details</h2>
 
-                <div style="margin-bottom: 20px; display: flex; gap: 10px;">
-                    <select id="semester-select"
-                        style="padding: 10px; border-radius: 8px; border: none; background: #f4f4f7; font-size: 1rem;">
-                        <option value="1">Semester 1</option>
-                        <option value="2">Semester 2</option>
-                    </select>
-                    <select id="year-select"
-                        style="padding: 10px; border-radius: 8px; border: none; background: #f4f4f7; font-size: 1rem;">
-                    </select>
-                </div>
+        <div class="semester-dropdown" style="margin-bottom: 15px;">
+          <select id="semester-select">
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+          </select>
+          <select id="year-select"></select>
+        </div>
 
-                <div id="dynamic-subject-list" class="subject-list">
-                </div>
+        <div id="dynamic-subject-list" class="subject-list"></div>
 
-                <button id="add-subject-btn"
-                    style="background: #000000; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px;">
-                    + Add Subject
-                </button>
-            </section>
+        <div style="display: flex; justify-content: flex-end">
+          <button id="add-subject-btn" class="btn-secondary">
+            + Add Subject
+          </button>
+        </div>
 
-            <div class="result-area">
-                <button id="calculate-gpa-btn" class="btn-primary">Calculate & Save</button>
-                <div id="final-gpa"></div>
-            </div>
-        </main>
-    </div>
+        <div id="final-gpa"></div>
+      </section>
 
-    <script src="{% static 'js/app.js' %}"></script>
+      <div class="result-area">
+        <button id="calculate-gpa-btn" class="btn-primary">
+          Calculate & Save
+        </button>
+      </div>
+    </main>
+  </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            const token = localStorage.getItem("access");
-            const refresh = localStorage.getItem("refresh");
-            if (!token) {
-                window.location.href = "/login/";
-                return;
-            }
+  <script src="{% static 'js/app.js' %}"></script>
 
-            try {
-                const res = await fetch("/api/gpa-tracking/", {
-                    headers: { "Authorization": "Bearer " + token }
-                });
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("access");
+      const refresh = localStorage.getItem("refresh");
 
-                if (res.status === 401) {
-                    console.warn("Token expired or invalid, redirecting to login...");
-                    localStorage.removeItem("access");
-                    localStorage.removeItem("refresh");
-                    window.location.href = "/login/";
-                }
-            } catch (err) {
-                console.error("Error verifying token:", err);
-                window.location.href = "/login/";
-            }
+      if (!token) {
+        console.warn("No token found, redirecting to login...");
+        window.location.href = "/login/";
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/gpa-tracking/", {
+          headers: { Authorization: "Bearer " + token },
         });
-    </script>
+
+        // ถ้า token หมดอายุ ให้ลอง refresh
+        if (res.status === 401 && refresh) {
+          console.log("Access expired. Trying refresh...");
+          const refreshRes = await fetch("/api/auth/refresh/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refresh }),
+          });
+
+          const data = await refreshRes.json();
+          if (refreshRes.ok && data.access) {
+            localStorage.setItem("access", data.access);
+          } else {
+            console.warn("Refresh failed, redirecting...");
+            localStorage.removeItem("access");
+            localStorage.removeItem("refresh");
+            window.location.href = "/login/";
+          }
+        } else if (res.status === 401) {
+          console.warn("Token invalid, redirecting...");
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
+          window.location.href = "/login/";
+        }
+      } catch (err) {
+        console.error("Error verifying token:", err);
+        window.location.href = "/login/";
+      }
+    });
+  </script>
 </body>
 
 </html>
