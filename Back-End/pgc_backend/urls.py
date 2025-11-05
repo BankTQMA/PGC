@@ -17,12 +17,16 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from gradecalc import views as gradecalc_views
-from rest_framework.authtoken.views import obtain_auth_token
+from gradecalc import views
 
 urlpatterns = [
-    path("", gradecalc_views.index_view, name="index"),
+    path("", views.index_view, name="index"),
+    path("login/", views.login_view, name="login_page"),
+    path("register/", views.register_view, name="register_page"),
+    path("add-record/", views.record_view, name="record_page"),
+    path("history/", views.history_view, name="history_page"),
+    path("graph/", views.graph_view, name="graph_page"),
     path("admin/", admin.site.urls),
     path("api/", include("gradecalc.urls")),
-    path("api/login/", obtain_auth_token, name="api_login"),
+    path("__reload__/", include("django_browser_reload.urls")),
 ]

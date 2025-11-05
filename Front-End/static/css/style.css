@@ -1,138 +1,365 @@
-/* Reset and global styles */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: linear-gradient(120deg, #f0f3ff 0%, #e6e9ff 100%);
-    color: #333;
-    min-height: 100vh;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  background: linear-gradient(120deg, #f0f3ff 0%, #e6e9ff 100%);
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 8vh;
+  animation: fadeIn 0.6s ease;
 }
 
-/* Main page container */
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+  width: 90%;
+  min-width: 400px;
+  max-width: 600px;
+  margin: 100px auto;
+  padding: 20px 20px 5px 20px;
+  position: relative;
+  background: linear-gradient(120deg, #f9faff 0%, #eef2ff 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.5s ease;
 }
 
-/* Header */
 header {
-    text-align: center;
-    margin: 30px 0;
+  text-align: center;
+  margin: 10px 0;
+  color: #1e3a8a;
 }
 
 header h1 {
-    font-size: 2rem;
-    font-weight: 600;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 header p {
-    font-size: 1rem;
-    color: #555;
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 30px;
 }
 
-/* General card styling */
 .card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    margin-bottom: 25px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 25px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Semester Card */
 .semester-card h2 {
-    font-size: 1.25rem;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
+  font-size: 1.25rem;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #dbeafe;
+  padding-bottom: 10px;
+  color: #1e3a8a;
+}
+
+.semester-card {
+  overflow: hidden;
+  transition: max-height 0.2s ease;
+  max-height: 250px;
 }
 
 .subject-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .subject-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.subject-row.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .subject-info strong {
-    font-size: 1.1rem;
-    font-weight: 500;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #1e3a8a;
 }
 
 .subject-info span {
-    font-size: 0.9rem;
-    color: #666;
-    margin-left: 8px;
+  font-size: 0.9rem;
+  color: #666;
+  margin-left: 8px;
 }
 
-.subject-score input {
-    width: 100px;
-    padding: 10px;
-    border: none;
-    background: #f4f4f7;
-    border-radius: 8px;
-    font-size: 1rem;
-    text-align: center;
+.subject-score input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: #fff;
 }
 
-/* Result and Button Area */
 .result-area {
-    text-align: center;
-    margin-top: 30px;
+  text-align: center;
+  margin: 10px 0;
 }
 
 .btn-primary {
-    padding: 14px 28px;
-    border: none;
-    border-radius: 8px;
-    background: #1a1a2e; /* Dark blue/black button */
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #3b82f6, #1e3a8a);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 6px rgba(59, 130, 246, 0.25);
 }
 
 .btn-primary:hover {
-    background: #333;
+  background: linear-gradient(90deg, #2563eb, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(59, 130, 246, 0.35);
+}
+
+.btn-secondary {
+  margin-top: 15px;
+  height: 20;
+  background: #3b82f6;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #2563eb;
 }
 
 #final-gpa {
-    font-size: 1.75rem;
-    font-weight: 600;
-    margin-top: 20px;
-    color: #007bff;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 20px;
+  color: #1e3a8a;
 }
 
-/* Help Icon */
 .help-icon {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background: #111;
-    color: white;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: 1.25rem;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: #1e3a8a;
+  color: white;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.help-icon:hover {
+  transform: translateY(-3px);
+}
+
+.back-link {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 3rem;
+  font-weight: bold;
+  line-height: 1;
+  color: #1e3a8a;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.back-link:hover {
+  color: #64748b;
+}
+
+form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #1e3a8a;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+select {
+  padding: 10px 12px;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #ffffff;
+  color: #1e293b;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.05);
+}
+
+input[type="text"]:hover,
+input[type="number"]:hover,
+input[type="email"]:hover,
+input[type="password"]:hover,
+textarea:hover,
+select:hover {
+  border-color: #93c5fd;
+  background: #f0f7ff;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.25);
+}
+
+select {
+  cursor: pointer;
+}
+
+select:hover {
+  background-color: #eef4ff;
+}
+
+select:focus {
+  border-color: #3b82f6;
+  background-color: #fff;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.25);
+}
+
+option {
+  background-color: #f9faff;
+  color: #1e3a8a;
+  font-size: 1rem;
+  padding: 8px 10px;
+}
+
+option:hover,
+option:checked {
+  background-color: #dbeafe;
+  color: #1e3a8a;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  box-shadow: none;
+}
+
+.semester-dropdown {
+  display: flex;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.semester-dropdown select {
+  width: 100%;
+}
+
+.dynamic-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.3s ease;
+}
+
+.subject-info {
+  flex-grow: 1;
+  display: flex;
+  gap: 10px;
+}
+
+.subject-name-input,
+.credit-input,
+.score-input {
+  border: 1px solid #dbeafe;
+  background: #f4f7ff;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.25s ease;
+}
+
+.subject-name-input {
+  width: 60%;
+}
+
+.credit-input {
+  width: 20%;
+  text-align: center;
+}
+
+.score-input {
+  width: 20%;
+  text-align: center;
+}
+
+.subject-name-input:focus,
+.credit-input:focus,
+.score-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.25);
+}
+
+.result-success {
+  color: #1e3a8a;
+  font-weight: 600;
+  font-size: 1.3rem;
+  text-align: center;
+  margin-top: 25px;
+}
+
+.result-error {
+  color: red;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 25px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

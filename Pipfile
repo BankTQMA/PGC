@@ -9,6 +9,8 @@ djangorestframework = "*"
 mkdocs = "*"
 djangorestframework-simplejwt = "*"
 django-cors-headers = "*"
+django-browser-reload = "*"
+black = "*"
 
 [dev-packages]
 

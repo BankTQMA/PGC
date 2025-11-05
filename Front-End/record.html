@@ -5,50 +5,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PGC - Home</title>
+  <title>PGC - Add Record</title>
   <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-  <link rel="stylesheet" href="{% static 'css/index.css' %}" />
-  <style>
-    .logout-button {
-      background: #dc3545;
-      margin-top: 30px;
-    }
-
-    .logout-button:hover {
-      background: #b52d38;
-    }
-  </style>
 </head>
 
 <body>
   <div class="container">
     <header>
-      <h1>Personal Grade Calculator</h1>
-      <p>Welcome to the best Grade calculator!!</p>
+      <a href="{% url 'index' %}" class="back-link" title="Back to Home">
+        &larr;
+      </a>
+      <h1>Add New Record</h1>
     </header>
 
     <main class="main-content">
-      <div class="home-menu">
-        <a href="/add-record/" class="menu-button">Add New Record</a>
+      {% csrf_token %}
 
-        <a href="{% url 'history_page' %}" class="menu-button menu-button-secondary">
-          View My History
-        </a>
+      <section class="card semester-card">
+        <h2>Semester Details</h2>
 
-        <a href="{% url 'graph_page' %}" class="menu-button menu-button-secondary">
-          GPA Charts
-        </a>
+        <div class="semester-dropdown" style="margin-bottom: 15px;">
+          <select id="semester-select">
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+          </select>
+          <select id="year-select"></select>
+        </div>
 
-        <a href="/admin/" class="menu-button menu-button-secondary">
-          Admin Panel
-        </a>
+        <div id="dynamic-subject-list" class="subject-list"></div>
 
-        <button id="logout-btn" class="menu-button logout-button">
-          Log Out
+        <div style="display: flex; justify-content: flex-end">
+          <button id="add-subject-btn" class="btn-secondary">
+            + Add Subject
+          </button>
+        </div>
+
+        <div id="final-gpa"></div>
+      </section>
+
+      <div class="result-area">
+        <button id="calculate-gpa-btn" class="btn-primary">
+          Calculate & Save
         </button>
       </div>
     </main>
   </div>
+
+  <script src="{% static 'js/app.js' %}"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
@@ -56,6 +59,7 @@
       const refresh = localStorage.getItem("refresh");
 
       if (!token) {
+        console.warn("No token found, redirecting to login...");
         window.location.href = "/login/";
         return;
       }
@@ -77,7 +81,6 @@
           const data = await refreshRes.json();
           if (refreshRes.ok && data.access) {
             localStorage.setItem("access", data.access);
-            console.log("Token refreshed successfully.");
           } else {
             console.warn("Refresh failed, redirecting...");
             localStorage.removeItem("access");
@@ -94,13 +97,6 @@
         console.error("Error verifying token:", err);
         window.location.href = "/login/";
       }
-
-      const logoutBtn = document.getElementById("logout-btn");
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("access");
-        localStorage.removeItem("refresh");
-        window.location.href = "/login/";
-      });
     });
   </script>
 </body>
