@@ -3,29 +3,21 @@
   width: 100%;
 }
 
+.arrow {
+  font-size: 3rem;
+  font-weight: bold;
+  line-height: 1;
+  color: #1e3a8a;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
 .chart-card {
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
-  padding: 30px;
-  margin-top: 40px;
-}
-
-header {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-  padding: 25px 30px;
-  margin-bottom: 30px;
-}
-
-h1 {
-  margin: 0;
-  font-size: 1.8rem;
-}
-
-p {
-  margin-top: 5px;
+  padding: 20px;
+  margin: 20px 0;
 }
 
 .control-panel {
@@ -34,6 +26,23 @@ p {
   gap: 10px;
   align-items: center;
   margin-bottom: 20px;
+}
+
+header {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0px;
+  margin: 0;
+}
+
+header p {
+  color: #666;
+  margin: 0 0 0 0;
+}
+
+.main-content {
+  margin: 20px;
 }
 
 select,

@@ -10,32 +10,25 @@
   </head>
 
   <body>
-    <div class="container">
-      <header style="display: flex; align-items: center; gap: 12px">
-        <a href="{% url 'index' %}" class="back-link">&larr;</a>
-        <div>
-          <h1>Interactive GPA Graph</h1>
-          <p style="color: #666; margin: 4px 0 0">
-            Select record(s) to visualize GPA (4.0) over time
-          </p>
-        </div>
+    <main class="container">
+      <header>
+        <a href="{% url 'index' %}" class="arrow">&larr;</a>
+        <h1>Interactive GPA Graph</h1>
+        <p>Select record(s) to visualize GPA (4.0) over time</p>
       </header>
+      <section class="chart-card">
+        <div class="control-panel">
+          <select id="recordDropdown">
+            <option value="">Select record from history</option>
+          </select>
+          <button id="addRecord">+ Add to Graph</button>
+          <button id="resetGraph">Reset Graph</button>
+        </div>
 
-      <main class="main-content">
-        <section class="chart-card">
-          <div class="control-panel">
-            <select id="recordDropdown">
-              <option value="">Select record from history</option>
-            </select>
-            <button id="addRecord">+ Add to Graph</button>
-            <button id="resetGraph">Reset Graph</button>
-          </div>
-
-          <canvas id="gpaChart" height="120"></canvas>
-          <div id="chartStatus" style="margin-top: 12px; color: #777"></div>
-        </section>
-      </main>
-    </div>
+        <canvas id="gpaChart" height="120"></canvas>
+        <div id="chartStatus" style="margin-top: 12px; color: #777"></div>
+      </section>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="{% static 'js/graph_interactive.js' %}"></script>
