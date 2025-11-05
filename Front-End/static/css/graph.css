@@ -1,12 +1,5 @@
-body {
-  background: #eef1ff;
-  display: flex;
-  justify-content: center;
-  padding: 40px 20px;
-}
-
 .container {
-  max-width: 900px;
+  max-width: 50vw;
   width: 100%;
 }
 
