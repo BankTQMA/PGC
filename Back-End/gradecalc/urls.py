@@ -10,4 +10,7 @@ urlpatterns = [
     path("auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("summary/", views.gpa_summary, name="gpa_summary"),
+    path("gpa-tracking/", views.gpa_tracking, name="gpa_tracking"),
+    path("gpa-by-year/", views.gpa_by_year, name="gpa_by_year"),
+    path("record/<int:record_id>/", views.record_detail, name="record_detail"),
 ]
