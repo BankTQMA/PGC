@@ -1,0 +1,68 @@
+body {
+  background: #eef1ff;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 900px;
+  width: 100%;
+}
+
+.chart-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  margin-top: 40px;
+}
+
+header {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  padding: 25px 30px;
+  margin-bottom: 30px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+p {
+  margin-top: 5px;
+}
+
+.control-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+select,
+button {
+  border-radius: 8px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+}
+
+button {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#addRecord {
+  background: #007bff;
+  color: white;
+  border: none;
+}
+
+#resetGraph {
+  background: #dc3545;
+  color: white;
+  border: none;
+}
