@@ -68,6 +68,11 @@ def record_view(request):
 
 
 @jwt_login_required
+def whatif_view(request):
+    return render(request, "whatif.html")
+
+
+@jwt_login_required
 def history_view(request):
     return render(request, "history.html")
 

@@ -1,0 +1,64 @@
+body {
+  background: #eef1ff;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 50vw;
+  width: 100%;
+  padding: 30px;
+}
+
+.arrow {
+  font-size: 3rem;
+  font-weight: bold;
+  line-height: 1;
+  color: #1e3a8a;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin: 20px 0 0 0;
+}
+
+.control-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+header {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0px;
+  margin: 0;
+}
+
+header p {
+  color: #666;
+  margin: 0 0 0 0;
+}
+
+select,
+input,
+button {
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+}
+
+#calcBtn {
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}

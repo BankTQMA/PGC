@@ -25,6 +25,7 @@ urlpatterns = [
     path("register/", views.register_view, name="register_page"),
     path("add-record/", views.record_view, name="record_page"),
     path("history/", views.history_view, name="history_page"),
+    path("what-if/", views.whatif_view, name="whatif_page"),
     path("graph/", views.graph_view, name="graph_page"),
     path("admin/", admin.site.urls),
     path("api/", include("gradecalc.urls")),
