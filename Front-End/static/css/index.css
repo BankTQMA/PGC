@@ -86,20 +86,11 @@ h1 {
 }
 
 .menu-button-green {
-  background: linear-gradient(90deg, #22c55e, #15803d);
-  box-shadow: 0 3px 6px rgba(34, 197, 94, 0.25);
+  background: linear-gradient(90deg, #14b887, #0d946b);
+  box-shadow: 0 3px 6px rgba(20, 184, 166, 0.25);
 }
 .menu-button-green:hover {
-  background: linear-gradient(90deg, #16a34a, #166534);
-  transform: translateY(-2px);
-}
-
-.menu-button-purple {
-  background: linear-gradient(90deg, #9d4fe6, #721fbb);
-  box-shadow: 0 3px 6px rgba(168, 85, 247, 0.25);
-}
-.menu-button-purple:hover {
-  background: linear-gradient(90deg, #9333ea, #6b21a8);
+  background: linear-gradient(90deg, #0faf72, #0b7757);
   transform: translateY(-2px);
 }
 
