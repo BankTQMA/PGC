@@ -11,6 +11,15 @@ body {
   padding: 30px;
 }
 
+.arrow {
+  font-size: 3rem;
+  font-weight: bold;
+  line-height: 1;
+  color: #1e3a8a;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
 .card {
   background: #fff;
   border-radius: 16px;
