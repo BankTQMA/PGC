@@ -65,6 +65,16 @@ h1 {
   transform: translateY(-2px);
 }
 
+.menu-button-warning {
+  background: linear-gradient(90deg, #e6bc14, #d97706);
+  box-shadow: 0 3px 6px rgba(250, 204, 21, 0.35);
+}
+
+.menu-button-warning:hover {
+  background: linear-gradient(90deg, #cea812, #c06906);
+  transform: translateY(-2px);
+}
+
 .logout-form {
   width: 100%;
   margin: 0;
