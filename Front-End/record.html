@@ -1,54 +1,104 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PGC - Add Record</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-  </head>
 
-  <body>
-    <div class="container">
-      <header>
-        <a href="{% url 'index' %}" class="back-link" title="Back to Home"
-          >&larr;</a
-        >
-        <h1>Add New Record</h1>
-      </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PGC - Add Record</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
 
-      <main class="main-content">
-        {% csrf_token %}
+<body>
+  <div class="container">
+    <header>
+      <a href="{% url 'index' %}" class="back-link" title="Back to Home">
+        &larr;
+      </a>
+      <h1>Add New Record</h1>
+    </header>
 
-        <section class="card semester-card">
-          <h2>Semester Details</h2>
+    <main class="main-content">
+      {% csrf_token %}
 
-          <div class="semester-dropdown">
-            <select id="semester-select">
-              <option value="1">Semester 1</option>
-              <option value="2">Semester 2</option>
-            </select>
-            <select id="year-select"></select>
-          </div>
+      <section class="card semester-card">
+        <h2>Semester Details</h2>
 
-          <div id="dynamic-subject-list" class="subject-list"></div>
+        <div class="semester-dropdown" style="margin-bottom: 15px;">
+          <select id="semester-select">
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+          </select>
+          <select id="year-select"></select>
+        </div>
 
-          <div style="display: flex; justify-content: flex-end">
-            <button id="add-subject-btn" class="btn-secondary">
-              + Add Subject
-            </button>
-          </div>
+        <div id="dynamic-subject-list" class="subject-list"></div>
 
-          <div id="final-gpa"></div>
-        </section>
-
-        <div class="result-area">
-          <button id="calculate-gpa-btn" class="btn-primary">
-            Calculate & Save
+        <div style="display: flex; justify-content: flex-end">
+          <button id="add-subject-btn" class="btn-secondary">
+            + Add Subject
           </button>
         </div>
-      </main>
-    </div>
-    <script src="{% static 'js/app.js' %}"></script>
-  </body>
+
+        <div id="final-gpa"></div>
+      </section>
+
+      <div class="result-area">
+        <button id="calculate-gpa-btn" class="btn-primary">
+          Calculate & Save
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script src="{% static 'js/app.js' %}"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("access");
+      const refresh = localStorage.getItem("refresh");
+
+      if (!token) {
+        console.warn("No token found, redirecting to login...");
+        window.location.href = "/login/";
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/gpa-tracking/", {
+          headers: { Authorization: "Bearer " + token },
+        });
+
+        // ถ้า token หมดอายุ ให้ลอง refresh
+        if (res.status === 401 && refresh) {
+          console.log("Access expired. Trying refresh...");
+          const refreshRes = await fetch("/api/auth/refresh/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refresh }),
+          });
+
+          const data = await refreshRes.json();
+          if (refreshRes.ok && data.access) {
+            localStorage.setItem("access", data.access);
+          } else {
+            console.warn("Refresh failed, redirecting...");
+            localStorage.removeItem("access");
+            localStorage.removeItem("refresh");
+            window.location.href = "/login/";
+          }
+        } else if (res.status === 401) {
+          console.warn("Token invalid, redirecting...");
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
+          window.location.href = "/login/";
+        }
+      } catch (err) {
+        console.error("Error verifying token:", err);
+        window.location.href = "/login/";
+      }
+    });
+  </script>
+</body>
+
 </html>

@@ -1,46 +1,102 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PGC - Sign In</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/registration.css' %}" />
-  </head>
-  <body>
-    <div class="container">
-      <header>
-        <h1>Sign In</h1>
-        <p>Please Sign in with your PGC Account</p>
-      </header>
-      <form method="post" class="card" action="{% url 'login' %}">
-        {% csrf_token %}
-        <div class="form-group">
-          {{ form.username.label_tag }} {{ form.username }}
-        </div>
 
-        <div class="form-group">
-          {{ form.password.label_tag }} {{ form.password }}
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PGC - Sign In</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/registration.css' %}" />
+</head>
 
-        {% for field, errors in form.errors.items %} {% for error in errors %}
-        <p class="error">* {{ error }}</p>
-        {% endfor %} {% endfor %}
+<body>
+  <div class="container">
+    <header>
+      <h1>Sign In</h1>
+      <p>Please sign in with your PGC account</p>
+    </header>
 
-        <div class="text-footer">
-          <p>New PGA User?</p>
-          <a href="{% url 'register' %}">Register</a>
-        </div>
+    <form method="post" class="card" id="login-form">
+      <div class="form-group">
+        <label for="id_username">Username</label>
+        <input id="id_username" type="text" class="form-control" placeholder="Enter your Username" required />
+      </div>
 
-        <div style="text-align: center; margin-top: 30px">
-          <button class="btn-primary" type="submit">Login</button>
-        </div>
-      </form>
-    </div>
+      <div class="form-group">
+        <label for="id_password">Password</label>
+        <input id="id_password" type="password" class="form-control" placeholder="Enter your Password" required />
+      </div>
 
-    {% if debug %}
-    <script src="{% url 'django_browser_reload:reload' %}"></script>
-    {% endif %}
-  </body>
+      <div class="text-footer" style="text-align:center; margin-top: 10px;">
+        <p>New PGC User?</p>
+        <a href="/register/">Register here</a>
+      </div>
+
+      <div style="text-align: center; margin-top: 25px">
+        <button class="btn-primary" type="submit">Login</button>
+      </div>
+
+      <div id="login-status" style="text-align:center; margin-top:10px; color:#777;"></div>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("login-form");
+      const statusText = document.getElementById("login-status");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const username = document.querySelector("#id_username").value.trim();
+        const password = document.querySelector("#id_password").value.trim();
+
+        if (!username || !password) {
+          alert("Please enter both username and password.");
+          return;
+        }
+
+        statusText.textContent = "Logging in...";
+
+        try {
+          const response = await fetch("/api/auth/login/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.access) {
+            localStorage.setItem("access", data.access);
+            localStorage.setItem("refresh", data.refresh);
+
+            statusText.style.color = "green";
+            statusText.textContent = "Login successful! Redirecting...";
+
+            setTimeout(() => {
+              window.location.href = "/";
+            }, 800);
+          } else {
+            statusText.style.color = "red";
+            statusText.textContent = "Login failed — invalid credentials.";
+            alert("Login failed: " + (data.detail || "Invalid credentials"));
+          }
+        } catch (err) {
+          console.error("Network error:", err);
+          statusText.style.color = "red";
+          statusText.textContent = "Network error. Please try again.";
+        }
+      });
+    });
+  </script>
+
+  {% if debug %}
+  <script src="{% url 'django_browser_reload:reload' %}"></script>
+  {% endif %}
+</body>
+
 </html>

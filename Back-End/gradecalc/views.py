@@ -2,47 +2,76 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.contrib.auth.models import User
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.conf import settings
+from django.http import JsonResponse
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 from .models import GradeResult, SubjectRecord
 from .serializers import CalculateSerializer, WhatIfSerializer, GradeResultSerializer
-from django.shortcuts import render
-import os
-from django.conf import settings
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.conf.global_settings import (
-    LOGIN_URL,
-    LOGIN_REDIRECT_URL,
-    LOGOUT_REDIRECT_URL,
-)
-from django.contrib.auth.forms import UserCreationForm
+
+jwt_authenticator = JWTAuthentication()
+
+
+# ---------- JWT + Session Integration ----------
+def jwt_login_required(view_func):
+    """Decorator ที่ให้หน้าเว็บใช้ได้ทั้ง JWT และ session-based login"""
+
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return view_func(request, *args, **kwargs)
+        try:
+            user_auth_tuple = jwt_authenticator.authenticate(request)
+            if user_auth_tuple is not None:
+                request.user, _ = user_auth_tuple
+            else:
+                raise AuthenticationFailed()
+        except AuthenticationFailed:
+            # ถ้าเป็นหน้า HTML -> render หน้า login
+            if request.headers.get("Accept", "").startswith("text/html"):
+                return redirect("/login/")
+            # ถ้าเป็น API -> ส่ง error JSON
+            return JsonResponse({"detail": "Authentication required."}, status=401)
+
+        return view_func(request, *args, **kwargs)
+
+    return _wrapped_view
+
+
+# ---------- หน้าเว็บหลัก ----------
+def login_view(request):
+    return render(request, "registration/login.html")
 
 
 def register_view(request):
+    """ใช้ form Django แบบเพื่อนสร้าง user"""
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("login")
+            return redirect("/login/")
     else:
-        form = UserCreationForm()  # create an empty form for GET requests
+        form = UserCreationForm()
     return render(request, "registration/register.html", {"form": form})
 
 
-@login_required(login_url=LOGIN_URL)
+@jwt_login_required
 def index_view(request):
     return render(request, "index.html")
 
 
-@login_required(login_url=LOGIN_URL)
+@jwt_login_required
 def record_view(request):
     return render(request, "record.html")
 
 
+@jwt_login_required
 def history_view(request):
     return render(request, "history.html")
 
 
+# ---------- ฟังก์ชันคำนวณเกรด ----------
 def score_to_grade(score):
     if score >= 80:
         return "A"
@@ -75,7 +104,7 @@ def letter_to_gpa4(letter):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def calculate_grade_post(request):
     serializer = CalculateSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -119,7 +148,7 @@ def calculate_grade_post(request):
         [
             SubjectRecord(
                 result=result,
-                name=sub["subject_name"],
+                name=sub.get("subject_name") or sub.get("name"),
                 score=sum(
                     comp["score"] * (comp["weight"] / 100) for comp in sub["components"]
                 ),
@@ -140,9 +169,9 @@ def calculate_grade_post(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def my_history(request):
-    results = GradeResult.objects.all().order_by("-created_at")
+    results = GradeResult.objects.filter(owner=request.user).order_by("-created_at")
     return Response(GradeResultSerializer(results, many=True).data)
 
 
@@ -184,20 +213,14 @@ def register_user(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def gpa_summary(request):
-    """
-    Combine all subject results of the currently logged-in user
-    and calculate the average GPA (both 4.0 scale and percentage)
-    """
     user = request.user
     results = GradeResult.objects.filter(owner=user)
-
     if not results.exists():
         return Response({"average_percent": 0, "average_gpa4": 0, "total_subjects": 0})
 
     total_score = sum(r.total_gpa for r in results)
     total_gpa4 = sum(r.gpa4 for r in results)
     count = results.count()
-
     avg_percent = round(total_score / count, 2)
     avg_gpa4 = round(total_gpa4 / count, 2)
 

@@ -21,9 +21,9 @@ from gradecalc import views
 
 urlpatterns = [
     path("", views.index_view, name="index"),
-    path("accounts/", include("django.contrib.auth.urls")),
-    path("accounts/register/", views.register_view, name="register"),
-    path("record/", views.record_view, name="record_page"),
+    path("login/", views.login_view, name="login_page"),
+    path("register/", views.register_view, name="register_page"),
+    path("add-record/", views.record_view, name="record_page"),
     path("history/", views.history_view, name="history_page"),
     path("admin/", admin.site.urls),
     path("api/", include("gradecalc.urls")),
