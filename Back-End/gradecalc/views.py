@@ -10,6 +10,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from .models import GradeResult, SubjectRecord
 from .serializers import CalculateSerializer, WhatIfSerializer, GradeResultSerializer
+from django.db.models import Avg, Count
 
 jwt_authenticator = JWTAuthentication()
 
@@ -69,6 +70,11 @@ def record_view(request):
 @jwt_login_required
 def history_view(request):
     return render(request, "history.html")
+
+
+@jwt_login_required
+def graph_view(request):
+    return render(request, "graph.html")
 
 
 # ---------- ฟังก์ชันคำนวณเกรด ----------
@@ -251,3 +257,56 @@ def gpa_tracking(request):
             for r in results
         ]
     )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def gpa_by_year(request):
+    """
+    คืนค่า avg_gpa4 และ avg_percent รายปีของ user ที่ล็อกอิน
+    รูปแบบ: [{year: 2024, avg_gpa4: 3.25, avg_percent: 78.5, count: 3}, ...]
+    """
+    qs = (
+        GradeResult.objects.filter(owner=request.user)
+        .values("year")
+        .annotate(
+            avg_gpa4=Avg("gpa4"),
+            avg_percent=Avg("total_gpa"),
+            count=Count("id"),
+        )
+        .order_by("year")
+    )
+    # ปัดทศนิยมอ่านง่าย
+    data = [
+        {
+            "year": row["year"],
+            "avg_gpa4": round(row["avg_gpa4"] or 0, 2),
+            "avg_percent": round(row["avg_percent"] or 0, 2),
+            "count": row["count"],
+        }
+        for row in qs
+    ]
+    return Response(data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def record_detail(request, record_id):
+    """
+    ดึงข้อมูลของ record เดียว (ใช้ id)
+    """
+    try:
+        record = GradeResult.objects.get(id=record_id, owner=request.user)
+    except GradeResult.DoesNotExist:
+        return Response({"error": "Record not found."}, status=404)
+
+    data = {
+        "id": record.id,
+        "year": record.year,
+        "semester": record.semester,
+        "gpa4": record.gpa4,
+        "total_gpa": record.total_gpa,
+        "grade_letter": record.grade_letter,
+        "created_at": record.created_at,
+    }
+    return Response(data)
