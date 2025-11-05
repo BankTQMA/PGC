@@ -3,44 +3,52 @@ async function getValidToken() {
   const refresh = localStorage.getItem("refresh");
 
   if (!token) {
+    console.warn("No access token, redirecting to login...");
     window.location.href = "/login/";
     return null;
   }
 
-  // ตรวจว่า access token ยังใช้ได้อยู่ไหม
-  const res = await fetch("/api/gpa-tracking/", {
-    headers: { Authorization: "Bearer " + token },
-  });
-
-  if (res.status === 401 && refresh) {
-    console.log("Access expired, trying refresh...");
-    const refreshRes = await fetch("/api/auth/refresh/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refresh }),
+  try {
+    const res = await fetch("/api/gpa-tracking/", {
+      headers: { Authorization: "Bearer " + token },
     });
+    if (res.status === 401 && refresh) {
+      console.log("Access token expired, trying refresh...");
 
-    const data = await refreshRes.json();
-    if (refreshRes.ok && data.access) {
-      localStorage.setItem("access", data.access);
-      token = data.access;
-    } else {
-      console.log("Refresh token invalid. Redirecting...");
-      localStorage.removeItem("access");
-      localStorage.removeItem("refresh");
-      window.location.href = "/login/";
-      return null;
+      const refreshRes = await fetch("/api/auth/refresh/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh }),
+      });
+
+      const data = await refreshRes.json();
+
+      if (refreshRes.ok && data.access) {
+        console.log("Token refreshed successfully!");
+        localStorage.setItem("access", data.access);
+        token = data.access;
+      } else {
+        console.warn("Refresh failed, redirecting to login...");
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        window.location.href = "/login/";
+        return null;
+      }
     }
+  } catch (err) {
+    console.error("Error validating token:", err);
+    window.location.href = "/login/";
+    return null;
   }
 
   return token;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // ---------- Year Dropdown ----------
   const yearSelect = document.getElementById("year-select");
   const currentYear = new Date().getFullYear();
   const startYear = 2020;
+
   for (let year = currentYear + 8; year >= startYear; year--) {
     const option = document.createElement("option");
     option.value = year;
@@ -53,19 +61,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const addSubjectBtn = document.getElementById("add-subject-btn");
   const subjectListDiv = document.getElementById("dynamic-subject-list");
   const finalGpaDiv = document.getElementById("final-gpa");
-  const row = document.createElement("div");
-  row.className = "subject-row dynamic-row";
   const card = document.querySelector(".semester-card");
 
-  // ---------- Add Subject Row ----------
   const addSubjectRow = () => {
+    const row = document.createElement("div");
+    row.className = "subject-row dynamic-row";
+
     row.innerHTML = `
-      <div class="subject-info">
-        <input type="text" class="subject-name-input" placeholder="Subject Name">
-        <input type="number" class="credit-input" placeholder="Credits" min="0.5" max="6" step="0.5">
-        <input type="number" class="score-input" min="0" max="100" placeholder="Score">
+      <div class="subject-info" style="display:flex; gap:10px; margin-bottom:10px;">
+        <input type="text" class="subject-name-input" placeholder="Subject Name"
+          style="flex:1; padding:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem;">
+        <input type="number" class="credit-input" placeholder="Credits" min="0.5" max="6" step="0.5"
+          style="width:90px; padding:10px; border-radius:8px; border:1px solid #ccc; text-align:center;">
+        <input type="number" class="score-input" min="0" max="100" placeholder="Score"
+          style="width:90px; padding:10px; border-radius:8px; border:1px solid #ccc; text-align:center;">
       </div>
     `;
+
     subjectListDiv.appendChild(row);
     requestAnimationFrame(() => row.classList.add("show"));
     card.style.maxHeight = card.scrollHeight + "px";
@@ -74,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
   addSubjectBtn.addEventListener("click", addSubjectRow);
   addSubjectRow();
 
-  // ---------- Calculate Button ----------
   calcGpaBtn.addEventListener("click", async () => {
     const token = await getValidToken();
     if (!token) return;
@@ -86,17 +97,23 @@ document.addEventListener("DOMContentLoaded", () => {
       const name = row.querySelector(".subject-name-input").value.trim();
       const credit = parseFloat(row.querySelector(".credit-input").value);
       const score = parseFloat(row.querySelector(".score-input").value);
+
       if (name && !isNaN(score) && !isNaN(credit) && credit > 0) {
         subjectsList.push({
           subject_name: name,
           credit: credit,
           components: [
-            { component_name: "Total", score: Number(score), weight: 100 },
+            {
+              component_name: "Total",
+              score: Number(score),
+              weight: 100,
+            },
           ],
         });
       }
     });
 
+    // ---------- Validation ----------
     if (!subjectsList.length) {
       finalGpaDiv.textContent = "Please add at least one valid subject.";
       finalGpaDiv.style.color = "red";
@@ -105,8 +122,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const semester = document.getElementById("semester-select").value;
     const year = parseInt(document.getElementById("year-select").value);
-
     const requestBody = { subjects: subjectsList, semester, year };
+
     finalGpaDiv.textContent = "Calculating...";
     finalGpaDiv.style.color = "#666";
 
@@ -121,20 +138,20 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const data = await response.json();
-      console.log("Response:", data);
+      console.log("📨 Response:", data);
 
       if (response.ok) {
         finalGpaDiv.innerHTML = `
           <div style="
-              color:#007bff;
-              font-weight:600;
-              font-size:1.3rem;
-              text-align:center;
-              margin-top:25px;
+            color: #007bff;
+            font-weight: 600;
+            font-size: 1.3rem;
+            text-align: center;
+            margin-top: 25px;
           ">
-              GPA (4.0): ${data.GPA_4.toFixed(2)} |
-              Percent: ${data.GPA_percent} |
-              Grade: ${data.Grade}
+            GPA (4.0): ${data.GPA_4.toFixed(2)} |
+            Percent: ${data.GPA_percent} |
+            Grade: ${data.Grade}
           </div>
         `;
       } else {
