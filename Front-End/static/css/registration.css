@@ -1,0 +1,24 @@
+.container {
+  min-width: 400px;
+  max-width: 500px;
+}
+
+.text-footer {
+  display: flex;
+  margin-top: 15px;
+  gap: 4px;
+  justify-content: flex-start;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.error {
+  color: rgba(255, 0, 0, 0.8);
+  font-size: 0.9em;
+  margin-top: 5px;
+  display: block;
+}
