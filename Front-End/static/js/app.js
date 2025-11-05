@@ -104,8 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const semester = document.getElementById("semester-select").value;
-        const year = parseInt(document.getElementById("year-select").value);
+    const semester = document.getElementById("semester-select").value;
+    const year = parseInt(document.getElementById("year-select").value);
 
         const requestBody = { subjects: subjectsList, semester, year };
         finalGpaDiv.textContent = "Calculating...";
@@ -121,8 +121,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(requestBody),
             });
 
-            const data = await response.json();
-            console.log("Response:", data);
+      const data = await response.json();
+      console.log("Response:", data);
 
             if (response.ok) {
                 finalGpaDiv.innerHTML = `
