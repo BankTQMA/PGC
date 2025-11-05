@@ -1,6 +1,7 @@
 .container {
   max-width: 50vw;
   width: 100%;
+  padding: 30px;
 }
 
 .arrow {
@@ -17,7 +18,7 @@
   border-radius: 16px;
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
   padding: 20px;
-  margin: 20px 0;
+  margin: 20px 0 0 0;
 }
 
 .control-panel {
