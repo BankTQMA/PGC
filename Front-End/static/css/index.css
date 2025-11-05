@@ -1,34 +1,68 @@
+.container {
+  padding: 40px 30px;
+}
+
+header {
+  background: none;
+  color: #1e3a8a;
+  padding: 10px 0 10px 0;
+}
+
+h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+}
+
 .home-menu {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  margin-top: 40px;
   align-items: center;
+  width: 100%;
+  margin-top: 20px;
 }
 
 .menu-button {
   width: 100%;
-  padding: 20px;
-  font-size: 1.2rem;
+  padding: 18px 24px;
+  font-size: 1.1rem;
   font-weight: 600;
   text-align: center;
   text-decoration: none;
   color: white;
-  background: #1a1a2e;
-  border-radius: 12px;
-  transition: background 0.2s;
+  background: linear-gradient(90deg, #3b82f6, #1e3a8a);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 6px rgba(59, 130, 246, 0.25);
 }
 
 .menu-button:hover {
-  background: #333;
+  background: linear-gradient(90deg, #2563eb, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(59, 130, 246, 0.35);
 }
 
 .menu-button-secondary {
-  background: #6c757d;
+  background: linear-gradient(90deg, #94a3b8, #64748b);
+  box-shadow: 0 3px 6px rgba(100, 116, 139, 0.25);
 }
 
 .menu-button-secondary:hover {
-  background: #5a6268;
+  background: linear-gradient(90deg, #64748b, #475569);
+  transform: translateY(-2px);
+}
+
+.menu-button-important {
+  background: linear-gradient(90deg, #ef4444, #b91c1c);
+  box-shadow: 0 3px 6px rgba(239, 68, 68, 0.25);
+}
+
+.menu-button-important:hover {
+  background: linear-gradient(90deg, #dc2626, #991b1b);
+  transform: translateY(-2px);
 }
 
 .logout-form {
@@ -38,10 +72,13 @@
   display: inline-block;
 }
 
-.menu-button-important {
-  background: #6c757d;
-}
-
-.menu-button-important:hover {
-  background: #ce2121;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

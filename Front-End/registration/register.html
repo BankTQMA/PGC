@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PGC - Registration</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/registration.css' %}" />
   </head>
   <body>
     <div class="container">
@@ -13,9 +14,7 @@
         <h1>Create New Account</h1>
         <p>Access your GPA history and features</p>
       </header>
-    </div>
 
-    <div class="container">
       <form method="post" class="card" action="{% url 'register' %}">
         {% csrf_token %}
         <div class="form-group">
@@ -34,7 +33,7 @@
         <p class="error">* {{ error }}</p>
         {% endfor %} {% endfor %}
 
-        <div style="display: flex; gap: 4px; margin-top: 10px">
+        <div class="text-footer">
           <p>Already had an account?</p>
           <a href="{% url 'login' %}">Login</a>
         </div>

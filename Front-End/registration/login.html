@@ -6,16 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PGC - Sign In</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/registration.css' %}" />
   </head>
   <body>
     <div class="container">
       <header>
         <h1>Sign In</h1>
-        <p>Access your GPA history and features</p>
+        <p>Please Sign in with your PGC Account</p>
       </header>
-    </div>
-
-    <div class="container">
       <form method="post" class="card" action="{% url 'login' %}">
         {% csrf_token %}
         <div class="form-group">
@@ -30,8 +28,8 @@
         <p class="error">* {{ error }}</p>
         {% endfor %} {% endfor %}
 
-        <div style="display: flex; gap: 4px; margin-top: 10px">
-          <p>New user?</p>
+        <div class="text-footer">
+          <p>New PGA User?</p>
           <a href="{% url 'register' %}">Register</a>
         </div>
 
