@@ -55,12 +55,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const finalGpaDiv = document.getElementById("final-gpa");
   const row = document.createElement("div");
   row.className = "subject-row dynamic-row";
+  const card = document.querySelector(".semester-card");
 
   // ---------- Add Subject Row ----------
   const addSubjectRow = () => {
-    const card = document.querySelector(".semester-card");
-    const row = document.createElement("div");
-    row.className = "subject-row dynamic-row";
     row.innerHTML = `
       <div class="subject-info">
         <input type="text" class="subject-name-input" placeholder="Subject Name">
@@ -83,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const subjectsList = [];
     const subjectRows = document.querySelectorAll(".dynamic-row");
-    const card = document.querySelector(".semester-card");
 
     subjectRows.forEach((row) => {
       const name = row.querySelector(".subject-name-input").value.trim();
