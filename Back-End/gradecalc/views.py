@@ -99,7 +99,6 @@ def score_to_grade(score):
     if score >= 50:
         return "D"
     return "F"
-    # Very Smart sorting algorithm NGL
 
 
 def letter_to_gpa4(letter):
@@ -113,7 +112,6 @@ def letter_to_gpa4(letter):
         "D": 1.0,
         "F": 0.0,
     }[letter]
-    # Damn who wrote this :skull:
 
 
 @api_view(["POST"])
