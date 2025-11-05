@@ -1,113 +1,36 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PGC - Interactive GPA Graph</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-    <style>
-        body {
-            background: #eef1ff;
-            display: flex;
-            justify-content: center;
-            padding: 40px 20px;
-        }
-    
-        .container {
-            max-width: 900px;
-            width: 100%;
-        }
-    
-        .chart-card {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
-            padding: 30px;
-            margin-top: 40px;
-        }
-    
-        header {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-            padding: 25px 30px;
-            margin-bottom: 30px;
-        }
-    
-        h1 {
-            margin: 0;
-            font-size: 1.8rem;
-        }
-    
-        p {
-            margin-top: 5px;
-        }
-    
-        .control-panel {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-    
-        select,
-        button {
-            border-radius: 8px;
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-        }
-    
-        button {
-            cursor: pointer;
-            font-weight: 600;
-        }
-    
-        #addRecord {
-            background: #007bff;
-            color: white;
-            border: none;
-        }
-    
-        #resetGraph {
-            background: #dc3545;
-            color: white;
-            border: none;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/graph.css' %}" />
+  </head>
 
-</head>
+  <body>
+    <main class="container">
+      <header>
+        <a href="{% url 'index' %}" class="arrow">&larr;</a>
+        <h1>Interactive GPA Graph</h1>
+        <p>Select record(s) to visualize GPA (4.0) over time</p>
+      </header>
+      <section class="chart-card">
+        <div class="control-panel">
+          <select id="recordDropdown">
+            <option value="">Select record from history</option>
+          </select>
+          <button id="addRecord">+ Add to Graph</button>
+          <button id="resetGraph">Reset Graph</button>
+        </div>
 
-<body>
-    <div class="container">
-        <header style="display:flex;align-items:center;gap:12px;">
-            <a href="{% url 'index' %}" class="back-link">&larr;</a>
-            <div>
-                <h1>Interactive GPA Graph</h1>
-                <p style="color:#666;margin:4px 0 0;">Select record(s) to visualize GPA (4.0) over time</p>
-            </div>
-        </header>
-
-        <main class="main-content">
-            <section class="chart-card">
-                <div class="control-panel">
-                    <select id="recordDropdown">
-                        <option value="">Select record from history</option>
-                    </select>
-                    <button id="addRecord">+ Add to Graph</button>
-                    <button id="resetGraph">Reset Graph</button>
-                </div>
-
-                <canvas id="gpaChart" height="120"></canvas>
-                <div id="chartStatus" style="margin-top:12px;color:#777;"></div>
-            </section>
-        </main>
-    </div>
+        <canvas id="gpaChart" height="120"></canvas>
+        <div id="chartStatus" style="margin-top: 12px; color: #777"></div>
+      </section>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="{% static 'js/graph_interactive.js' %}"></script>
-</body>
-
+  </body>
 </html>
