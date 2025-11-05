@@ -1,0 +1,40 @@
+body {
+  background: #eef1ff;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 800px;
+  width: 100%;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+}
+
+.control-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+select,
+input,
+button {
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+}
+
+#calcBtn {
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
