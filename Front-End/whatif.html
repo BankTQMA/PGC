@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PGC - What If Calculator</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <style>
+        body {
+            background: #eef1ff;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, .08);
+            padding: 30px;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        select,
+        input,
+        button {
+            border-radius: 8px;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+        }
+
+        #calcBtn {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header style="display:flex; align-items:center; gap:12px; margin-bottom: 10px;">
+            <a href="{% url 'index' %}" class="back-link" style="font-size: 1.4rem; text-decoration: none; color: #1a1a2e;">
+                &larr;
+            </a>
+            <div style="display:flex; flex-direction:column;">
+                <h1 style="margin:0; font-size:1.6rem; color:#1a1a2e;">What-If GPA Calculator</h1>
+                <p style="margin:2px 0 0; color:#666; font-size:0.95rem;">
+                    Predict the score you need to reach your target GPA
+                </p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="card">
+                <div class="control-panel">
+                    <select id="recordDropdown">
+                        <option value="">Select record from history</option>
+                    </select>
+                    <input type="number" id="targetGPA" step="0.01" min="0" max="4"
+                        placeholder="Target GPA (e.g. 3.25)" />
+                    <button id="calcBtn">Calculate</button>
+                </div>
+                <div id="resultArea" style="margin-top:20px;color:#333;"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{% static 'js/whatif.js' %}"></script>
+</body>
+
+</html>
