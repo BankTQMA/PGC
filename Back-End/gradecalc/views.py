@@ -21,6 +21,7 @@ def jwt_login_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         if request.user.is_authenticated:
             return view_func(request, *args, **kwargs)
+
         try:
             user_auth_tuple = jwt_authenticator.authenticate(request)
             if user_auth_tuple is not None:
@@ -28,10 +29,13 @@ def jwt_login_required(view_func):
             else:
                 raise AuthenticationFailed()
         except AuthenticationFailed:
-            # ถ้าเป็นหน้า HTML -> render หน้า login
-            if request.headers.get("Accept", "").startswith("text/html"):
-                return redirect("/login/")
-            # ถ้าเป็น API -> ส่ง error JSON
+            accept_header = request.headers.get("Accept", "")
+
+            # ถ้าเป็นหน้า HTML ให้ปล่อยให้ frontend จัดการ redirect เอง
+            if accept_header.startswith("text/html"):
+                return view_func(request, *args, **kwargs)
+
+            # ถ้าเป็น API -> ต้องมีการยืนยันตัวตน
             return JsonResponse({"detail": "Authentication required."}, status=401)
 
         return view_func(request, *args, **kwargs)
